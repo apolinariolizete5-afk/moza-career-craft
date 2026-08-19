@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CriarCvRouteImport } from './routes/criar-cv'
+import { Route as NotificacoesRouteImport } from './routes/notificacoes'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as PesquisarRouteImport } from './routes/pesquisar'
+import { Route as AdminVagasRouteImport } from './routes/admin.vagas'
+import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
+import { Route as EmpresasSlugRouteImport } from './routes/empresas.$slug'
+import { Route as VagasIndexRouteImport } from './routes/vagas.index'
+import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CriarCvRoute = CriarCvRouteImport.update({
+  id: '/criar-cv',
+  path: '/criar-cv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificacoesRoute = NotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesquisarRoute = PesquisarRouteImport.update({
+  id: '/pesquisar',
+  path: '/pesquisar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVagasRoute = AdminVagasRouteImport.update({
+  id: '/admin/vagas',
+  path: '/admin/vagas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
+  id: '/empresas/',
+  path: '/empresas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpresasSlugRoute = EmpresasSlugRouteImport.update({
+  id: '/empresas/$slug',
+  path: '/empresas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VagasIndexRoute = VagasIndexRouteImport.update({
+  id: '/vagas/',
+  path: '/vagas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VagasSlugRoute = VagasSlugRouteImport.update({
+  id: '/vagas/$slug',
+  path: '/vagas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/criar-cv': typeof CriarCvRoute
+  '/notificacoes': typeof NotificacoesRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisar': typeof PesquisarRoute
+  '/admin/vagas': typeof AdminVagasRoute
+  '/empresas/$slug': typeof EmpresasSlugRoute
+  '/vagas/$slug': typeof VagasSlugRoute
+  '/empresas/': typeof EmpresasIndexRoute
+  '/vagas/': typeof VagasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/criar-cv': typeof CriarCvRoute
+  '/notificacoes': typeof NotificacoesRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisar': typeof PesquisarRoute
+  '/admin/vagas': typeof AdminVagasRoute
+  '/empresas/$slug': typeof EmpresasSlugRoute
+  '/vagas/$slug': typeof VagasSlugRoute
+  '/empresas': typeof EmpresasIndexRoute
+  '/vagas': typeof VagasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/criar-cv': typeof CriarCvRoute
+  '/notificacoes': typeof NotificacoesRoute
+  '/perfil': typeof PerfilRoute
+  '/pesquisar': typeof PesquisarRoute
+  '/admin/vagas': typeof AdminVagasRoute
+  '/empresas/$slug': typeof EmpresasSlugRoute
+  '/vagas/$slug': typeof VagasSlugRoute
+  '/empresas/': typeof EmpresasIndexRoute
+  '/vagas/': typeof VagasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/criar-cv'
+    | '/notificacoes'
+    | '/perfil'
+    | '/pesquisar'
+    | '/admin/vagas'
+    | '/empresas/$slug'
+    | '/vagas/$slug'
+    | '/empresas/'
+    | '/vagas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/criar-cv'
+    | '/notificacoes'
+    | '/perfil'
+    | '/pesquisar'
+    | '/admin/vagas'
+    | '/empresas/$slug'
+    | '/vagas/$slug'
+    | '/empresas'
+    | '/vagas'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/criar-cv'
+    | '/notificacoes'
+    | '/perfil'
+    | '/pesquisar'
+    | '/admin/vagas'
+    | '/empresas/$slug'
+    | '/vagas/$slug'
+    | '/empresas/'
+    | '/vagas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  CriarCvRoute: typeof CriarCvRoute
+  NotificacoesRoute: typeof NotificacoesRoute
+  PerfilRoute: typeof PerfilRoute
+  PesquisarRoute: typeof PesquisarRoute
+  AdminVagasRoute: typeof AdminVagasRoute
+  EmpresasSlugRoute: typeof EmpresasSlugRoute
+  VagasSlugRoute: typeof VagasSlugRoute
+  EmpresasIndexRoute: typeof EmpresasIndexRoute
+  VagasIndexRoute: typeof VagasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/criar-cv': {
+      id: '/criar-cv'
+      path: '/criar-cv'
+      fullPath: '/criar-cv'
+      preLoaderRoute: typeof CriarCvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notificacoes': {
+      id: '/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof NotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesquisar': {
+      id: '/pesquisar'
+      path: '/pesquisar'
+      fullPath: '/pesquisar'
+      preLoaderRoute: typeof PesquisarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/vagas': {
+      id: '/admin/vagas'
+      path: '/admin/vagas'
+      fullPath: '/admin/vagas'
+      preLoaderRoute: typeof AdminVagasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresas/': {
+      id: '/empresas/'
+      path: '/empresas'
+      fullPath: '/empresas/'
+      preLoaderRoute: typeof EmpresasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresas/$slug': {
+      id: '/empresas/$slug'
+      path: '/empresas/$slug'
+      fullPath: '/empresas/$slug'
+      preLoaderRoute: typeof EmpresasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vagas/': {
+      id: '/vagas/'
+      path: '/vagas'
+      fullPath: '/vagas/'
+      preLoaderRoute: typeof VagasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vagas/$slug': {
+      id: '/vagas/$slug'
+      path: '/vagas/$slug'
+      fullPath: '/vagas/$slug'
+      preLoaderRoute: typeof VagasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  CriarCvRoute: CriarCvRoute,
+  NotificacoesRoute: NotificacoesRoute,
+  PerfilRoute: PerfilRoute,
+  PesquisarRoute: PesquisarRoute,
+  AdminVagasRoute: AdminVagasRoute,
+  EmpresasSlugRoute: EmpresasSlugRoute,
+  VagasSlugRoute: VagasSlugRoute,
+  EmpresasIndexRoute: EmpresasIndexRoute,
+  VagasIndexRoute: VagasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
