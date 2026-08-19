@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { listFacets, listJobs } from "@/lib/jobs.functions";
 
 interface VagasSearch {
-  q?: string;
-  location?: string;
-  category?: string;
-  type?: string;
-  experience?: string;
-  days?: string;
-  page?: number;
+  q: string | undefined;
+  location: string | undefined;
+  category: string | undefined;
+  type: string | undefined;
+  experience: string | undefined;
+  days: string | undefined;
+  page: number | undefined;
 }
 
 const str = (value: unknown) => (typeof value === "string" && value ? value : undefined);
@@ -46,15 +46,18 @@ export const Route = createFileRoute("/vagas/")({
       },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>): VagasSearch => ({
-    q: str(search.q),
-    location: str(search.location),
-    category: str(search.category),
-    type: str(search.type),
-    experience: str(search.experience),
-    days: str(search.days),
-    page: Number(search.page) > 1 ? Number(search.page) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): VagasSearch => {
+    const page = Number(search["page"]);
+    return {
+      q: str(search["q"]),
+      location: str(search["location"]),
+      category: str(search["category"]),
+      type: str(search["type"]),
+      experience: str(search["experience"]),
+      days: str(search["days"]),
+      page: Number.isFinite(page) && page > 1 ? page : undefined,
+    };
+  },
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }) => {
     await Promise.all([
@@ -69,17 +72,12 @@ export const Route = createFileRoute("/vagas/")({
       </p>
     </AppShell>
   ),
-  notFoundComponent: () => (
-    <AppShell>
-      <p className="py-12 text-center text-sm text-muted-foreground">Nenhuma vaga encontrada.</p>
-    </AppShell>
-  ),
   component: VagasPage,
 });
 
 function VagasPage() {
   const search = Route.useSearch();
-  const navigate = useNavigate({ from: "/vagas" });
+  const navigate = useNavigate({ from: "/vagas/" });
   const { data } = useSuspenseQuery(jobsQuery(search));
   const { data: facets } = useSuspenseQuery(facetsQuery);
 
@@ -102,10 +100,23 @@ function VagasPage() {
     filters.days !== "any" ? filters.days : "",
   ].filter(Boolean).length;
 
-  const patch = (next: Partial<VagasSearch>) =>
+  const applyFilters = (next: Partial<FiltersValue>) => {
+    const merged = { ...filters, ...next };
     navigate({
-      search: (prev) => ({ ...prev, ...next, page: undefined }),
+      search: {
+        q: search.q,
+        location: merged.location || undefined,
+        category: merged.category || undefined,
+        type: merged.type || undefined,
+        experience: merged.experience || undefined,
+        days: merged.days && merged.days !== "any" ? merged.days : undefined,
+        page: undefined,
+      },
     });
+  };
+
+  const goToPage = (next: number) =>
+    navigate({ search: { ...search, page: next > 1 ? next : undefined } });
 
   return (
     <AppShell>
@@ -119,26 +130,27 @@ function VagasPage() {
       <div className="space-y-3">
         <JobSearchBar
           defaultValue={search.q ?? ""}
-          onSubmit={(term) => patch({ q: term || undefined })}
+          onSubmit={(term) =>
+            navigate({ search: { ...search, q: term || undefined, page: undefined } })
+          }
         />
         <JobFilters
           value={filters}
           activeCount={activeCount}
           locations={facets.locations}
           categories={facets.categories}
-          onChange={(next) =>
-            patch({
-              location: next.location ?? filters.location || undefined,
-              category: next.category ?? filters.category || undefined,
-              type: next.type ?? filters.type || undefined,
-              experience: next.experience ?? filters.experience || undefined,
-              days:
-                (next.days ?? filters.days) === "any" ? undefined : (next.days ?? filters.days),
-            })
-          }
+          onChange={applyFilters}
           onClear={() =>
             navigate({
-              search: (prev) => ({ q: prev.q }),
+              search: {
+                q: search.q,
+                location: undefined,
+                category: undefined,
+                type: undefined,
+                experience: undefined,
+                days: undefined,
+                page: undefined,
+              },
             })
           }
         />
@@ -158,15 +170,7 @@ function VagasPage() {
 
       {totalPages > 1 && (
         <nav className="mt-6 flex items-center justify-between gap-3" aria-label="Paginação">
-          <Button
-            variant="outline"
-            disabled={page <= 1}
-            onClick={() =>
-              navigate({
-                search: (prev) => ({ ...prev, page: page - 1 > 1 ? page - 1 : undefined }),
-              })
-            }
-          >
+          <Button variant="outline" disabled={page <= 1} onClick={() => goToPage(page - 1)}>
             Anterior
           </Button>
           <span className="text-sm text-muted-foreground">
@@ -175,7 +179,7 @@ function VagasPage() {
           <Button
             variant="outline"
             disabled={page >= totalPages}
-            onClick={() => navigate({ search: (prev) => ({ ...prev, page: page + 1 }) })}
+            onClick={() => goToPage(page + 1)}
           >
             Seguinte
           </Button>
