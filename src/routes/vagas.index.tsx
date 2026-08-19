@@ -8,21 +8,29 @@ import { Button } from "@/components/ui/button";
 import { listFacets, listJobs } from "@/lib/jobs.functions";
 
 interface VagasSearch {
-  q: string | undefined;
-  location: string | undefined;
-  category: string | undefined;
-  type: string | undefined;
-  experience: string | undefined;
-  days: string | undefined;
-  page: number | undefined;
+  q?: string;
+  location?: string;
+  category?: string;
+  type?: string;
+  experience?: string;
+  days?: string;
+  page?: number;
 }
 
 const str = (value: unknown) => (typeof value === "string" && value ? value : undefined);
 
+function clean(input: Record<string, unknown>): VagasSearch {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined && value !== "" && value !== "any") out[key] = value;
+  }
+  return out as VagasSearch;
+}
+
 const jobsQuery = (search: VagasSearch) =>
   queryOptions({
     queryKey: ["jobs", "list", search],
-    queryFn: () => listJobs({ data: { ...search, limit: 20 } }),
+    queryFn: () => listJobs({ data: { ...search, limit: 20 } as VagasSearch & { limit: number } }),
   });
 
 const facetsQuery = queryOptions({
@@ -48,7 +56,7 @@ export const Route = createFileRoute("/vagas/")({
   }),
   validateSearch: (search: Record<string, unknown>): VagasSearch => {
     const page = Number(search["page"]);
-    return {
+    return clean({
       q: str(search["q"]),
       location: str(search["location"]),
       category: str(search["category"]),
@@ -56,7 +64,7 @@ export const Route = createFileRoute("/vagas/")({
       experience: str(search["experience"]),
       days: str(search["days"]),
       page: Number.isFinite(page) && page > 1 ? page : undefined,
-    };
+    });
   },
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }) => {
@@ -102,21 +110,11 @@ function VagasPage() {
 
   const applyFilters = (next: Partial<FiltersValue>) => {
     const merged = { ...filters, ...next };
-    navigate({
-      search: {
-        q: search.q,
-        location: merged.location || undefined,
-        category: merged.category || undefined,
-        type: merged.type || undefined,
-        experience: merged.experience || undefined,
-        days: merged.days && merged.days !== "any" ? merged.days : undefined,
-        page: undefined,
-      },
-    });
+    navigate({ search: clean({ q: search.q, ...merged }) });
   };
 
   const goToPage = (next: number) =>
-    navigate({ search: { ...search, page: next > 1 ? next : undefined } });
+    navigate({ search: clean({ ...search, page: next > 1 ? next : undefined }) });
 
   return (
     <AppShell>
@@ -131,7 +129,7 @@ function VagasPage() {
         <JobSearchBar
           defaultValue={search.q ?? ""}
           onSubmit={(term) =>
-            navigate({ search: { ...search, q: term || undefined, page: undefined } })
+            navigate({ search: clean({ ...search, q: term, page: undefined }) })
           }
         />
         <JobFilters
@@ -141,17 +139,7 @@ function VagasPage() {
           categories={facets.categories}
           onChange={applyFilters}
           onClear={() =>
-            navigate({
-              search: {
-                q: search.q,
-                location: undefined,
-                category: undefined,
-                type: undefined,
-                experience: undefined,
-                days: undefined,
-                page: undefined,
-              },
-            })
+            navigate({ search: clean({ q: search.q }) })
           }
         />
       </div>
