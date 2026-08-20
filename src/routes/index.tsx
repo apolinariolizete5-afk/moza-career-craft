@@ -115,7 +115,7 @@ function Index() {
         </p>
         <div className="mt-5 rounded-2xl bg-card p-2">
           <JobSearchBar
-            onSubmit={(term) => navigate({ to: "/vagas", search: { q: term || undefined } })}
+            onSubmit={(term) => navigate({ to: "/vagas", search: term ? { q: term } : {} })}
           />
         </div>
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
