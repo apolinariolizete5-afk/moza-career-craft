@@ -184,3 +184,20 @@
     display: none;
   }
 }
+
+@media print {
+  body {
+    background: #fff;
+  }
+  header,
+  nav,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+  #cv-print-area {
+    box-shadow: none;
+    padding: 0;
+    max-width: none;
+  }
+}
