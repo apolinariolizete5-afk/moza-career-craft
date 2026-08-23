@@ -71,14 +71,14 @@ function CriarCvPage() {
     try {
       const dataUrl = await toDataUrl(file);
       const base64 = dataUrl.split(",")[1] ?? "";
-      const result = await parse({
+      const result = (await parse({
         data: { base64, mimeType: file.type || "application/pdf", fileName: file.name },
-      });
+      })) as { ok: true; cvJson: string } | { ok: false; error: string };
       if (!result.ok) {
         setAiState({ loading: false, message: result.error });
         return;
       }
-      const cv = result.cv as Partial<CvData>;
+      const cv = JSON.parse(result.cvJson) as Partial<CvData>;
       setData((prev) => ({
         ...prev,
         fullName: str(cv.fullName) || prev.fullName,
