@@ -40,9 +40,9 @@ export function CvPreview({
     ring,
     shape,
   }: {
-    size?: number;
-    ring?: string;
-    shape?: "circle" | "square" | "arch";
+    size?: number | undefined;
+    ring?: string | undefined;
+    shape?: "circle" | "square" | "arch" | undefined;
   }) => {
     const s = shape ?? template.photoShape;
     const radius = s === "circle" ? "9999px" : s === "arch" ? `${size / 2}px ${size / 2}px 12px 12px` : "10px";
@@ -67,7 +67,7 @@ export function CvPreview({
     );
   };
 
-  const Title = ({ children, color = accent }: { children: React.ReactNode; color?: string }) => (
+  const Title = ({ children, color = accent }: { children: React.ReactNode; color?: string | undefined }) => (
     <h3
       className="text-[11px] font-bold uppercase tracking-[0.16em]"
       style={{ color, fontFamily: serif ? "Georgia, serif" : undefined }}
@@ -84,8 +84,8 @@ export function CvPreview({
   }: {
     title: string;
     children: React.ReactNode;
-    color?: string;
-    rule?: boolean;
+    color?: string | undefined;
+    rule?: boolean | undefined;
   }) => (
     <section className="mt-4">
       <Title color={color}>{title}</Title>
@@ -94,7 +94,7 @@ export function CvPreview({
     </section>
   );
 
-  const Experiences = ({ color = accent, rule }: { color?: string; rule?: boolean }) =>
+  const Experiences = ({ color = accent, rule }: { color?: string | undefined; rule?: boolean | undefined }) =>
     experiences.length > 0 ? (
       <Section title="Experiência" color={color} rule={rule}>
         {experiences.map((e, i) => (
@@ -109,7 +109,7 @@ export function CvPreview({
       </Section>
     ) : null;
 
-  const Education = ({ color = accent, rule }: { color?: string; rule?: boolean }) =>
+  const Education = ({ color = accent, rule }: { color?: string | undefined; rule?: boolean | undefined }) =>
     education.length > 0 ? (
       <Section title="Formação" color={color} rule={rule}>
         {education.map((e, i) => (
@@ -121,14 +121,14 @@ export function CvPreview({
       </Section>
     ) : null;
 
-  const Summary = ({ color = accent, rule }: { color?: string; rule?: boolean }) =>
+  const Summary = ({ color = accent, rule }: { color?: string | undefined; rule?: boolean | undefined }) =>
     data.summary ? (
       <Section title="Perfil" color={color} rule={rule}>
         <p className="text-neutral-700">{data.summary}</p>
       </Section>
     ) : null;
 
-  const Contacts = ({ color = accent, className = "" }: { color?: string; className?: string }) =>
+  const Contacts = ({ color = accent, className = "" }: { color?: string | undefined; className?: string | undefined }) =>
     contacts.length > 0 ? (
       <div className={className}>
         <Section title="Contactos" color={color}>
