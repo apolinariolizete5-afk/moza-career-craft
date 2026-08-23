@@ -67,7 +67,8 @@ export const parseCvFile = createServerFn({ method: "POST" })
     if (!match) return { ok: false as const, error: "Não foi possível interpretar o CV." };
 
     try {
-      return { ok: true as const, cv: JSON.parse(match[0]) as Record<string, unknown> };
+      JSON.parse(match[0]);
+      return { ok: true as const, cvJson: match[0] };
     } catch {
       return { ok: false as const, error: "Não foi possível interpretar o CV." };
     }
