@@ -55,11 +55,15 @@ export const SAMPLE_CV: CvData = {
 };
 
 export type CvLayout =
-  | "sidebar-photo"
-  | "header-dark"
-  | "banner-photo"
-  | "classic-photo"
-  | "split"
+  | "sidebar-dark"
+  | "sidebar-right"
+  | "header-band"
+  | "centered-arch"
+  | "timeline"
+  | "two-tone"
+  | "monogram"
+  | "corner-photo"
+  | "cards"
   | "minimal";
 
 export type CvTemplate = {
@@ -70,31 +74,33 @@ export type CvTemplate = {
   /** cor de fundo da coluna/cabeçalho */
   surface: string;
   photoShape: "circle" | "square";
+  font?: "sans" | "serif";
   premium: boolean;
 };
 
 export const CV_TEMPLATES: CvTemplate[] = [
-  { id: "maputo-sidebar", name: "Maputo", layout: "sidebar-photo", accent: "#0F5132", surface: "#0F5132", photoShape: "circle", premium: false },
-  { id: "executive", name: "Executive", layout: "header-dark", accent: "#1F2937", surface: "#111827", photoShape: "circle", premium: false },
-  { id: "corporate", name: "Corporate", layout: "classic-photo", accent: "#12324F", surface: "#EEF2F7", photoShape: "square", premium: false },
-  { id: "modern", name: "Modern", layout: "banner-photo", accent: "#0E7C66", surface: "#0E7C66", photoShape: "circle", premium: false },
+  { id: "maputo-sidebar", name: "Maputo", layout: "sidebar-dark", accent: "#0F5132", surface: "#0F5132", photoShape: "circle", premium: false },
+  { id: "executive", name: "Executive", layout: "header-band", accent: "#C9A227", surface: "#111827", photoShape: "circle", premium: false },
+  { id: "corporate", name: "Corporate", layout: "sidebar-right", accent: "#12324F", surface: "#EEF2F7", photoShape: "square", premium: false },
+  { id: "modern", name: "Modern", layout: "two-tone", accent: "#0E7C66", surface: "#0E7C66", photoShape: "circle", premium: false },
   { id: "minimal", name: "Minimal", layout: "minimal", accent: "#2B2B2B", surface: "#F5F5F5", photoShape: "square", premium: false },
-  { id: "beira", name: "Beira", layout: "split", accent: "#1B6CA8", surface: "#1B6CA8", photoShape: "circle", premium: true },
-  { id: "nampula", name: "Nampula", layout: "sidebar-photo", accent: "#7A3E9D", surface: "#4C2A63", photoShape: "square", premium: true },
-  { id: "elegant", name: "Elegant", layout: "classic-photo", accent: "#5A3E2B", surface: "#F3EDE6", photoShape: "circle", premium: true },
-  { id: "impact", name: "Impact", layout: "banner-photo", accent: "#C0392B", surface: "#C0392B", photoShape: "square", premium: true },
-  { id: "focus", name: "Focus", layout: "split", accent: "#00695C", surface: "#00695C", photoShape: "circle", premium: true },
-  { id: "clarity", name: "Clarity", layout: "sidebar-photo", accent: "#37474F", surface: "#263238", photoShape: "circle", premium: true },
-  { id: "prestige", name: "Prestige", layout: "header-dark", accent: "#8E6C0A", surface: "#3E2F05", photoShape: "square", premium: true },
-  { id: "startup", name: "Startup", layout: "banner-photo", accent: "#6C3CD1", surface: "#6C3CD1", photoShape: "circle", premium: true },
-  { id: "academic", name: "Academic", layout: "classic-photo", accent: "#1A237E", surface: "#E8EAF6", photoShape: "square", premium: true },
-  { id: "technical", name: "Technical", layout: "sidebar-photo", accent: "#004D6E", surface: "#00344C", photoShape: "square", premium: true },
-  { id: "creative", name: "Creative", layout: "split", accent: "#D81B60", surface: "#D81B60", photoShape: "circle", premium: true },
-  { id: "graduate", name: "Graduate", layout: "minimal", accent: "#2E7D32", surface: "#EAF3EA", photoShape: "circle", premium: true },
-  { id: "manager", name: "Manager", layout: "header-dark", accent: "#455A64", surface: "#2C3A41", photoShape: "circle", premium: true },
-  { id: "consultant", name: "Consultant", layout: "classic-photo", accent: "#0B4F6C", surface: "#E7F0F4", photoShape: "square", premium: true },
-  { id: "zambeze", name: "Zambeze", layout: "split", accent: "#0F8B8D", surface: "#0F8B8D", photoShape: "square", premium: true },
+  { id: "beira", name: "Beira", layout: "centered-arch", accent: "#1B6CA8", surface: "#DCEAF6", photoShape: "circle", premium: true },
+  { id: "nampula", name: "Nampula", layout: "corner-photo", accent: "#7A3E9D", surface: "#4C2A63", photoShape: "square", premium: true },
+  { id: "elegant", name: "Elegant", layout: "monogram", accent: "#5A3E2B", surface: "#F3EDE6", photoShape: "circle", font: "serif", premium: true },
+  { id: "impact", name: "Impact", layout: "corner-photo", accent: "#C0392B", surface: "#1C1C1C", photoShape: "square", premium: true },
+  { id: "focus", name: "Focus", layout: "timeline", accent: "#00695C", surface: "#E4F1EE", photoShape: "circle", premium: true },
+  { id: "clarity", name: "Clarity", layout: "cards", accent: "#37474F", surface: "#ECEFF1", photoShape: "circle", premium: true },
+  { id: "prestige", name: "Prestige", layout: "monogram", accent: "#8E6C0A", surface: "#FBF6E6", photoShape: "circle", font: "serif", premium: true },
+  { id: "startup", name: "Startup", layout: "cards", accent: "#6C3CD1", surface: "#F1ECFB", photoShape: "circle", premium: true },
+  { id: "academic", name: "Academic", layout: "timeline", accent: "#1A237E", surface: "#E8EAF6", photoShape: "square", font: "serif", premium: true },
+  { id: "technical", name: "Technical", layout: "sidebar-dark", accent: "#00A3C4", surface: "#00344C", photoShape: "square", premium: true },
+  { id: "creative", name: "Creative", layout: "two-tone", accent: "#D81B60", surface: "#D81B60", photoShape: "circle", premium: true },
+  { id: "graduate", name: "Graduate", layout: "centered-arch", accent: "#2E7D32", surface: "#E3F0E4", photoShape: "circle", premium: true },
+  { id: "manager", name: "Manager", layout: "header-band", accent: "#90A4AE", surface: "#2C3A41", photoShape: "circle", premium: true },
+  { id: "consultant", name: "Consultant", layout: "sidebar-right", accent: "#0B4F6C", surface: "#E7F0F4", photoShape: "square", premium: true },
+  { id: "zambeze", name: "Zambeze", layout: "minimal", accent: "#0F8B8D", surface: "#FFFFFF", photoShape: "circle", font: "serif", premium: true },
 ];
+
 
 export const CV_STORAGE_KEY = "moza-cv-draft";
 
