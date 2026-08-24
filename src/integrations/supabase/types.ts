@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           cover_message: string | null
@@ -100,6 +118,42 @@ export type Database = {
           updated_at?: string
           verified?: boolean
           website?: string | null
+        }
+        Relationships: []
+      }
+      cv_purchases: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string | null
+          paid_at: string | null
+          provider_id: string | null
+          reference: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string | null
+          paid_at?: string | null
+          provider_id?: string | null
+          reference: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string | null
+          paid_at?: string | null
+          provider_id?: string | null
+          reference?: string
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }

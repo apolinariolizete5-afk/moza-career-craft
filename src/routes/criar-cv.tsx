@@ -17,6 +17,8 @@ import {
   type CvData,
 } from "@/lib/cv";
 import { parseCvFile } from "@/lib/cv.functions";
+import { useCvDownload } from "@/hooks/useCvDownload";
+
 
 export const Route = createFileRoute("/criar-cv")({
   head: () => ({
@@ -51,6 +53,8 @@ function CriarCvPage() {
   const photoInput = useRef<HTMLInputElement>(null);
   const cvInput = useRef<HTMLInputElement>(null);
   const parse = useServerFn(parseCvFile);
+  const pdf = useCvDownload();
+
 
   useEffect(() => setData(loadCv()), []);
   useEffect(() => saveCv(data), [data]);
@@ -454,8 +458,9 @@ function CriarCvPage() {
                   Seguinte
                 </Button>
               ) : (
-                <Button className="gap-1" onClick={() => window.print()}>
-                  <Download className="h-4 w-4" /> Descarregar PDF
+                <Button className="gap-1" disabled={pdf.busy} onClick={() => void pdf.download()}>
+                  {pdf.busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  {pdf.paid ? "Descarregar PDF" : `Pagar e descarregar${pdf.amount ? ` · ${pdf.amount} MZN` : ""}`}
                 </Button>
               )}
             </div>
@@ -469,9 +474,24 @@ function CriarCvPage() {
           <div className="overflow-hidden rounded-2xl border border-border bg-white print:border-0">
             <CvPreview id="cv-print-area" data={preview} template={template} />
           </div>
-          <Button variant="outline" className="mt-3 w-full gap-1 print:hidden" onClick={() => window.print()}>
-            <Download className="h-4 w-4" /> Descarregar PDF
+          <Button
+            variant="outline"
+            className="mt-3 w-full gap-1 print:hidden"
+            disabled={pdf.busy}
+            onClick={() => void pdf.download()}
+          >
+            {pdf.busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {pdf.paid ? "Descarregar PDF" : `Pagar e descarregar${pdf.amount ? ` · ${pdf.amount} MZN` : ""}`}
           </Button>
+          {pdf.message ? (
+            <p className="mt-2 text-center text-xs text-destructive print:hidden">{pdf.message}</p>
+          ) : null}
+          {!pdf.paid ? (
+            <p className="mt-2 text-center text-xs text-muted-foreground print:hidden">
+              Pagamento seguro por M-Pesa, e-Mola ou cartão.
+            </p>
+          ) : null}
+
         </div>
       </div>
     </AppShell>
