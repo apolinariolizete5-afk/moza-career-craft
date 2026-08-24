@@ -17,6 +17,8 @@ import {
   type CvData,
 } from "@/lib/cv";
 import { parseCvFile } from "@/lib/cv.functions";
+import { useCvDownload } from "@/hooks/useCvDownload";
+
 
 export const Route = createFileRoute("/criar-cv")({
   head: () => ({
@@ -51,6 +53,8 @@ function CriarCvPage() {
   const photoInput = useRef<HTMLInputElement>(null);
   const cvInput = useRef<HTMLInputElement>(null);
   const parse = useServerFn(parseCvFile);
+  const pdf = useCvDownload();
+
 
   useEffect(() => setData(loadCv()), []);
   useEffect(() => saveCv(data), [data]);
