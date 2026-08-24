@@ -31,6 +31,9 @@ export const EMPTY_CV: CvData = {
   templateId: "maputo-sidebar",
 };
 
+/** Fotografia de exemplo usada nas amostras dos modelos. */
+export const SAMPLE_PHOTO = "/__l5e/assets-v1/84a8c7a3-478d-4be2-af74-37f63a62b315/cv-sample-photo.jpg";
+
 /** Dados de demonstração usados nas miniaturas quando o utilizador ainda não preencheu nada. */
 export const SAMPLE_CV: CvData = {
   ...EMPTY_CV,
@@ -39,20 +42,41 @@ export const SAMPLE_CV: CvData = {
   email: "ana.macuacua@email.com",
   phone: "+258 84 000 0000",
   location: "Maputo, Moçambique",
+  photo: SAMPLE_PHOTO,
   summary:
-    "Profissional com 6 anos de experiência em operações e liderança de equipas, focada em resultados e melhoria de processos.",
+    "Gestora com 8 anos de experiência em operações, logística e liderança de equipas multidisciplinares. Historial comprovado na redução de custos, na melhoria de processos e no cumprimento de metas trimestrais em empresas de grande dimensão em Moçambique.",
   experiences: [
     {
       role: "Gestora de Operações",
-      company: "Grupo Zambeze",
+      company: "Grupo Zambeze, Maputo",
       period: "2022 — Atual",
-      description: "Coordenação de equipa de 12 pessoas e redução de 18% nos custos logísticos.",
+      description:
+        "Coordenação de uma equipa de 12 pessoas em três armazéns; redução de 18% nos custos logísticos e aumento de 25% na pontualidade das entregas.",
+    },
+    {
+      role: "Supervisora de Logística",
+      company: "TecnoMoz, Matola",
+      period: "2019 — 2022",
+      description:
+        "Gestão de stock e frota, negociação com fornecedores e implementação de um sistema de controlo que eliminou 90% das rupturas.",
+    },
+    {
+      role: "Assistente Administrativa",
+      company: "Banco Horizonte, Beira",
+      period: "2017 — 2019",
+      description:
+        "Apoio administrativo, atendimento a clientes empresariais e elaboração de relatórios mensais de desempenho.",
     },
   ],
-  education: [{ course: "Licenciatura em Gestão", school: "UEM", period: "2015 — 2019" }],
-  skills: "Gestão de equipas, Excel avançado, Logística, Atendimento ao cliente",
-  languages: "Português (nativo), Inglês (intermédio)",
+  education: [
+    { course: "Mestrado em Gestão de Operações", school: "Universidade Eduardo Mondlane", period: "2020 — 2022" },
+    { course: "Licenciatura em Gestão de Empresas", school: "Universidade Eduardo Mondlane", period: "2015 — 2019" },
+  ],
+  skills:
+    "Gestão de equipas, Logística e cadeia de abastecimento, Excel avançado, Análise de dados, Negociação, Gestão de orçamentos, Atendimento ao cliente",
+  languages: "Português (nativo), Inglês (avançado), Changana (fluente)",
 };
+
 
 export type CvLayout =
   | "sidebar-dark"
