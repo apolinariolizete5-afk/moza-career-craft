@@ -318,9 +318,11 @@ function VagaPage() {
 
         <section className="mt-6">
           <h2 className="text-base font-extrabold">Descrição da vaga</h2>
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-            {job.description}
-          </p>
+          <RichText
+            text={job.description}
+            className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
+          />
+
         </section>
 
         <List title="Responsabilidades" items={job.responsibilities} />
