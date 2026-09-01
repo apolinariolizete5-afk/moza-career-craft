@@ -150,5 +150,5 @@ export function saveCv(data: CvData) {
 /** Junta os dados do utilizador com o exemplo, para miniaturas nunca ficarem vazias. */
 export function previewData(data: CvData): CvData {
   const filled = data.fullName || data.title || data.summary || data.experiences.some((e) => e.role);
-  return filled ? data : { ...SAMPLE_CV, photo: data.photo, templateId: data.templateId };
+  return filled ? data : { ...SAMPLE_CV, photo: data.photo || SAMPLE_PHOTO, templateId: data.templateId };
 }

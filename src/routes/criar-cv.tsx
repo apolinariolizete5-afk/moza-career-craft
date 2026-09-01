@@ -41,7 +41,7 @@ export const Route = createFileRoute("/criar-cv")({
   component: CriarCvPage,
 });
 
-const STEPS = ["Dados", "Experiência", "Formação", "Competências", "Modelo"] as const;
+const STEPS = ["Modelo", "Dados", "Experiência", "Formação", "Competências"] as const;
 
 function CriarCvPage() {
   const [data, setData] = useState<CvData>(EMPTY_CV);
@@ -187,7 +187,7 @@ function CriarCvPage() {
           </nav>
 
           <div className="rounded-2xl border border-border bg-card p-4">
-            {step === 0 && (
+            {step === 1 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="sm:col-span-2 flex items-center gap-4 rounded-xl border border-border p-3">
                   {data.photo ? (
@@ -275,7 +275,7 @@ function CriarCvPage() {
               </div>
             )}
 
-            {step === 1 && (
+            {step === 2 && (
               <div className="space-y-4">
                 {data.experiences.map((exp, index) => (
                   <div key={index} className="rounded-xl border border-border p-3">
@@ -339,7 +339,7 @@ function CriarCvPage() {
               </div>
             )}
 
-            {step === 2 && (
+            {step === 3 && (
               <div className="space-y-4">
                 {data.education.map((edu, index) => (
                   <div key={index} className="grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-2">
@@ -388,7 +388,7 @@ function CriarCvPage() {
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div className="grid gap-3">
                 <div>
                   <Label htmlFor="skills">Competências</Label>
@@ -418,7 +418,7 @@ function CriarCvPage() {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 0 && (
               <div>
                 <p className="mb-3 text-sm text-muted-foreground">
                   As miniaturas mostram os <strong>seus dados</strong>. Toque para escolher.
