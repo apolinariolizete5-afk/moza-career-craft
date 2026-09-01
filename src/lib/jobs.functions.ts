@@ -95,7 +95,7 @@ export const getJobBySlug = createServerFn({ method: "GET" })
     const { data: row, error } = await supabase
       .from("jobs")
       .select(
-        "id, slug, title, company_name, location, category, job_type, experience_level, salary_min, salary_max, salary_currency, summary, description, responsibilities, requirements, benefits, how_to_apply, apply_url, apply_email, expires_at, is_featured, published_at, companies(slug, logo_url, description, website)",
+        "id, slug, title, company_name, location, category, job_type, experience_level, salary_min, salary_max, salary_currency, summary, description, responsibilities, requirements, benefits, how_to_apply, apply_url, apply_email, expires_at, image_url, is_featured, published_at, companies(slug, logo_url, description, website)",
       )
       .eq("status", "publicada")
       .eq("slug", data.slug)
@@ -112,6 +112,7 @@ export const getJobBySlug = createServerFn({ method: "GET" })
       apply_url: string | null;
       apply_email: string | null;
       expires_at: string | null;
+      image_url: string | null;
     };
     return {
       ...toListItem(typed),
@@ -123,6 +124,7 @@ export const getJobBySlug = createServerFn({ method: "GET" })
       apply_url: typed.apply_url,
       apply_email: typed.apply_email,
       expires_at: typed.expires_at,
+      image_url: typed.image_url ?? null,
       company_description: typed.companies?.description ?? null,
       company_website: typed.companies?.website ?? null,
     };
