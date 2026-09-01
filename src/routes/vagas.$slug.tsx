@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { SaveJobButton } from "@/components/jobs/SaveJobButton";
+import { RichText } from "@/components/RichText";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
