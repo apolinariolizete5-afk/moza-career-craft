@@ -60,6 +60,7 @@ export interface JobDetail extends JobListItem {
   apply_url: string | null;
   apply_email: string | null;
   expires_at: string | null;
+  image_url: string | null;
   company_description: string | null;
   company_website: string | null;
 }

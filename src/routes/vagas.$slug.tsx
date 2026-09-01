@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { SaveJobButton } from "@/components/jobs/SaveJobButton";
+import { RichText } from "@/components/RichText";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -251,7 +252,16 @@ function VagaPage() {
       </Link>
 
       <article className="mt-4">
+        {job.image_url ? (
+          <img
+            src={job.image_url}
+            alt={`Imagem da vaga ${job.title}`}
+            loading="lazy"
+            className="mb-4 h-44 w-full rounded-3xl object-cover sm:h-60"
+          />
+        ) : null}
         <header className="rounded-3xl border border-border bg-card p-5">
+
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="flex min-w-0 items-start gap-3">
               <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-primary-soft text-primary">
@@ -318,9 +328,11 @@ function VagaPage() {
 
         <section className="mt-6">
           <h2 className="text-base font-extrabold">Descrição da vaga</h2>
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-            {job.description}
-          </p>
+          <RichText
+            text={job.description}
+            className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
+          />
+
         </section>
 
         <List title="Responsabilidades" items={job.responsibilities} />

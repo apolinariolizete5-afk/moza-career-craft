@@ -172,6 +172,7 @@ export type Database = {
           expires_at: string | null
           how_to_apply: string | null
           id: string
+          image_url: string | null
           is_featured: boolean
           job_type: Database["public"]["Enums"]["job_type"]
           location: string
@@ -186,6 +187,7 @@ export type Database = {
           summary: string
           title: string
           updated_at: string
+          views_count: number
         }
         Insert: {
           apply_email?: string | null
@@ -201,6 +203,7 @@ export type Database = {
           expires_at?: string | null
           how_to_apply?: string | null
           id?: string
+          image_url?: string | null
           is_featured?: boolean
           job_type?: Database["public"]["Enums"]["job_type"]
           location: string
@@ -215,6 +218,7 @@ export type Database = {
           summary: string
           title: string
           updated_at?: string
+          views_count?: number
         }
         Update: {
           apply_email?: string | null
@@ -230,6 +234,7 @@ export type Database = {
           expires_at?: string | null
           how_to_apply?: string | null
           id?: string
+          image_url?: string | null
           is_featured?: boolean
           job_type?: Database["public"]["Enums"]["job_type"]
           location?: string
@@ -244,6 +249,7 @@ export type Database = {
           summary?: string
           title?: string
           updated_at?: string
+          views_count?: number
         }
         Relationships: [
           {
@@ -383,6 +389,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_job_view: { Args: { _slug: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "employer" | "user"
