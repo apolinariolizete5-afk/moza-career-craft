@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Briefcase,
@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/useSession";
-import { getJobBySlug } from "@/lib/jobs.functions";
+import { getJobBySlug, registerJobView } from "@/lib/jobs.functions";
 import {
   EXPERIENCE_LABELS,
   JOB_TYPE_LABELS,
@@ -241,6 +241,10 @@ function VagaPage() {
   const { data } = useSuspenseQuery(jobQuery(slug));
   const job = data as JobDetail;
   const salary = formatSalary(job);
+
+  useEffect(() => {
+    void registerJobView({ data: { slug } }).catch(() => {});
+  }, [slug]);
 
   return (
     <AppShell>
