@@ -226,3 +226,11 @@ export const getCompanyBySlug = createServerFn({ method: "GET" })
       };
     },
   );
+
+export const registerJobView = createServerFn({ method: "POST" })
+  .inputValidator((input: { slug: string }) => input)
+  .handler(async ({ data }) => {
+    const { getPublicSupabase } = await import("./supabase-public.server");
+    await getPublicSupabase().rpc("increment_job_view", { _slug: data.slug });
+    return { ok: true };
+  });
