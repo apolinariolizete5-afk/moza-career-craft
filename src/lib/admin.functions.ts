@@ -107,7 +107,7 @@ export const adminSaveJob = createServerFn({ method: "POST" })
       apply_email: data.apply_email || null,
       apply_url: data.apply_url || null,
       created_by: context.userId,
-    };
+    } as never;
     const query = data.id
       ? context.supabase.from("jobs").update(row).eq("id", data.id)
       : context.supabase.from("jobs").insert(row);
@@ -164,14 +164,14 @@ export const adminSetRole = createServerFn({ method: "POST" })
     if (data.grant) {
       const { error } = await context.supabase
         .from("user_roles")
-        .upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role" });
+        .upsert({ user_id: data.userId, role: data.role } as never, { onConflict: "user_id,role" });
       if (error) throw new Error(error.message);
     } else {
       const { error } = await context.supabase
         .from("user_roles")
         .delete()
         .eq("user_id", data.userId)
-        .eq("role", data.role);
+        .eq("role", data.role as never);
       if (error) throw new Error(error.message);
     }
     return { ok: true };
