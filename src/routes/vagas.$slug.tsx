@@ -242,6 +242,10 @@ function VagaPage() {
   const job = data as JobDetail;
   const salary = formatSalary(job);
 
+  useEffect(() => {
+    void registerJobView({ data: { slug } }).catch(() => {});
+  }, [slug]);
+
   return (
     <AppShell>
       <Link
