@@ -1,87 +1,294 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-/** Preço do download do CV (MZN), configurável pelo admin em app_settings. */
-export const getCvPrice = createServerFn({ method: "GET" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
-    .from("app_settings")
-    .select("value")
-    .eq("key", "cv_price_mzn")
-    .maybeSingle();
-  return { price: Number(data?.value ?? 150) };
-});
+const NETSHOP_API = "https://www.netshop.co.mz/api/v1";
 
-/** Diz se o utilizador já pagou (tem pelo menos uma compra confirmada). */
+type PaymentMethod = "mpesa" | "emola" | "mkesh" | "card";
+
+function getWalletId(walletId?: string) {
+  const wallet1 = process.env["NETSHOP_WALLET_ID_1"];
+  const wallet2 = process.env["NETSHOP_WALLET_ID_2"];
+
+  if (walletId === wallet1 && wallet1) return wallet1;
+  if (walletId === wallet2 && wallet2) return wallet2;
+
+  return wallet1 || wallet2 || "";
+}
+
+/**
+ * Preço do download do CV.
+ */
+export const getCvPrice = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+
+    const { data } = await supabaseAdmin
+      .from("app_settings")
+      .select("value")
+      .eq("key", "cv_price_mzn")
+      .maybeSingle();
+
+    return {
+      price: Number(data?.value ?? 150),
+    };
+  }
+);
+
+/**
+ * Verifica se O UTILIZADOR ATUAL já pagou.
+ */
 export const getCvAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+
+    const { data, error } = await supabaseAdmin
       .from("cv_purchases")
       .select("id")
+      .eq("user_id", context.userId)
       .eq("status", "paid")
       .limit(1);
-    return { paid: (data?.length ?? 0) > 0 };
-  });
 
-/** Cria um pagamento na PaySuite e devolve o link de checkout (M-Pesa, e-Mola, cartão). */
-export const createCvPayment = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((data: { returnUrl: string }) => data)
-  .handler(async ({ data, context }) => {
-    const apiKey = process.env["PAYSUITE_API_KEY"];
-    if (!apiKey) {
-      return { ok: false as const, error: "Pagamentos ainda não configurados. Falta a chave PaySuite." };
+    if (error) {
+      console.error("Erro ao verificar acesso:", error);
+
+      return {
+        paid: false,
+      };
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    return {
+      paid: (data?.length ?? 0) > 0,
+    };
+  });
+
+/**
+ * Cria uma cobrança na NetShop.
+ *
+ * Métodos:
+ * - mpesa
+ * - emola
+ * - mkesh
+ * - card
+ */
+export const createCvPayment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: {
+      returnUrl: string;
+      method: PaymentMethod;
+      msisdn?: string;
+      walletId?: string;
+    }) => data
+  )
+  .handler(async ({ data, context }) => {
+    const apiKey = process.env["NETSHOP_API_KEY"];
+
+    if (!apiKey) {
+      return {
+        ok: false as const,
+        error:
+          "Pagamentos não configurados. NETSHOP_API_KEY não encontrada.",
+      };
+    }
+
+    const walletId = getWalletId(data.walletId);
+
+    if (!walletId) {
+      return {
+        ok: false as const,
+        error: "Nenhum Wallet ID da NetShop foi configurado.",
+      };
+    }
+
+    if (!data.returnUrl) {
+      return {
+        ok: false as const,
+        error: "URL de retorno inválida.",
+      };
+    }
+
+    if (data.method !== "card" && !data.msisdn) {
+      return {
+        ok: false as const,
+        error: "O número de telefone é obrigatório.",
+      };
+    }
+
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+
     const { data: setting } = await supabaseAdmin
       .from("app_settings")
       .select("value")
       .eq("key", "cv_price_mzn")
       .maybeSingle();
+
     const amount = Number(setting?.value ?? 150);
-    const reference = `CV-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`.toUpperCase();
 
-    await supabaseAdmin.from("cv_purchases").insert({
-      user_id: context.userId,
-      reference,
-      amount,
-      status: "pending",
-    });
-
-    const origin = new URL(data.returnUrl).origin;
-    const response = await fetch("https://paysuite.tech/api/v1/payments", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        amount: String(amount),
-        reference,
-        description: "Download de CV - Moza Empregos",
-        return_url: data.returnUrl,
-        callback_url: `${origin}/api/public/paysuite-webhook`,
-      }),
-    });
-
-    const json = (await response.json().catch(() => null)) as
-      | { status?: string; data?: { id?: string; checkout_url?: string }; message?: string }
-      | null;
-
-    if (!response.ok || !json?.data?.checkout_url) {
-      console.error("PaySuite create failed", response.status, json?.message);
-      return { ok: false as const, error: json?.message ?? "Não foi possível iniciar o pagamento." };
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return {
+        ok: false as const,
+        error: "Preço do CV inválido.",
+      };
     }
 
-    if (json.data.id) {
+    const reference =
+      `CV-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+        .toUpperCase();
+
+    const { error: purchaseError } = await supabaseAdmin
+      .from("cv_purchases")
+      .insert({
+        user_id: context.userId,
+        reference,
+        amount,
+        status: "pending",
+      });
+
+    if (purchaseError) {
+      console.error("Erro ao criar compra:", purchaseError);
+
+      return {
+        ok: false as const,
+        error: "Não foi possível criar o pedido de pagamento.",
+      };
+    }
+
+    let origin: string;
+
+    try {
+      origin = new URL(data.returnUrl).origin;
+    } catch {
+      return {
+        ok: false as const,
+        error: "URL de retorno inválida.",
+      };
+    }
+
+    const chargeBody: Record<string, unknown> = {
+      amount,
+      currency: "MZN",
+      method: data.method,
+      reference,
+      description: "Download de CV - Moza Empregos",
+      return_url: data.returnUrl,
+      metadata: {
+        product: "cv_download",
+        user_id: context.userId,
+      },
+    };
+
+    if (data.method !== "card") {
+      chargeBody.msisdn = data.msisdn;
+    }
+
+    try {
+      const response = await fetch(`${NETSHOP_API}/charges`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "X-Wallet-ID": walletId,
+          "Idempotency-Key": reference,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(chargeBody),
+      });
+
+      const json = (await response.json().catch(() => null)) as
+        | {
+            id?: string;
+            status?: string;
+            message?: string;
+            error?: string;
+            charge?: {
+              id?: string;
+              status?: string;
+            };
+            checkout?: {
+              hosted_url?: string;
+            };
+          }
+        | null;
+
+      if (!response.ok) {
+        console.error(
+          "Erro NetShop:",
+          response.status,
+          json
+        );
+
+        await supabaseAdmin
+          .from("cv_purchases")
+          .update({
+            status: "failed",
+          })
+          .eq("reference", reference);
+
+        return {
+          ok: false as const,
+          error:
+            json?.message ||
+            json?.error ||
+            `NetShop recusou o pagamento (${response.status}).`,
+        };
+      }
+
+      const chargeId =
+        json?.id ||
+        json?.charge?.id ||
+        null;
+
+      const chargeStatus =
+        json?.status ||
+        json?.charge?.status ||
+        "pending";
+
+      if (chargeId) {
+        await supabaseAdmin
+          .from("cv_purchases")
+          .update({
+            provider_id: chargeId,
+            method: data.method,
+          })
+          .eq("reference", reference);
+      } else {
+        await supabaseAdmin
+          .from("cv_purchases")
+          .update({
+            method: data.method,
+          })
+          .eq("reference", reference);
+      }
+
+      return {
+        ok: true as const,
+        reference,
+        chargeId,
+        status: chargeStatus,
+        checkoutUrl:
+          json?.checkout?.hosted_url || null,
+      };
+    } catch (error) {
+      console.error("Erro de comunicação com NetShop:", error);
+
       await supabaseAdmin
         .from("cv_purchases")
-        .update({ provider_id: json.data.id })
+        .update({
+          status: "failed",
+        })
         .eq("reference", reference);
-    }
 
-    return { ok: true as const, checkoutUrl: json.data.checkout_url, reference };
+      return {
+        ok: false as const,
+        error:
+          "Não foi possível comunicar com o serviço de pagamentos.",
+      };
+    }
   });
