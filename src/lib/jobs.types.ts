@@ -48,6 +48,7 @@ export interface JobListItem {
   salary_currency: string;
   summary: string;
   is_featured: boolean;
+  image_url: string | null;
   published_at: string;
 }
 
