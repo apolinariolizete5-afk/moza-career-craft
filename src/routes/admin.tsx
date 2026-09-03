@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/ImageUpload";
 import { useSession } from "@/hooks/useSession";
 import { EXPERIENCE_LABELS, JOB_TYPE_LABELS } from "@/lib/jobs.types";
 import {
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Visão geral", "Vagas", "Utilizadores"] as const;
+const TABS = ["Visão geral", "Vagas", "Visualizações", "Utilizadores"] as const;
 
 const EMPTY_JOB: AdminJobInput = {
   title: "",
@@ -128,6 +129,7 @@ function AdminPage() {
       <div className="mt-5">
         {tab === "Visão geral" && <Overview />}
         {tab === "Vagas" && <JobsManager />}
+        {tab === "Visualizações" && <ViewsPanel />}
         {tab === "Utilizadores" && <UsersManager />}
       </div>
     </AppShell>
@@ -323,7 +325,17 @@ function JobForm({
         <Text label="Empresa" value={v.company_name} onChange={(x) => set("company_name", x)} />
         <Text label="Localização" value={v.location} onChange={(x) => set("location", x)} />
         <Text label="Categoria" value={v.category} onChange={(x) => set("category", x)} />
-        <Text label="Imagem (URL)" value={v.image_url} onChange={(x) => set("image_url", x)} />
+        <div className="sm:col-span-2">
+          <Label>Imagem da vaga</Label>
+          <div className="mt-1 space-y-2">
+            <ImageUpload value={v.image_url} onChange={(x) => set("image_url", x)} />
+            <Input
+              placeholder="ou cole um endereço de imagem (https://...)"
+              value={v.image_url}
+              onChange={(e) => set("image_url", e.target.value)}
+            />
+          </div>
+        </div>
         <Select
           label="Tipo"
           value={v.job_type}
@@ -404,6 +416,10 @@ function JobForm({
         Vaga em destaque
       </label>
 
+      <p className="mt-3 text-xs text-muted-foreground">
+        Nenhum campo é obrigatório — pode guardar com os dados que tiver.
+      </p>
+
       <div className="mt-4 flex gap-2">
         <Button disabled={busy} onClick={() => onSave(v)}>
           {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null} Guardar
@@ -412,6 +428,49 @@ function JobForm({
           Cancelar
         </Button>
       </div>
+    </div>
+  );
+}
+
+function ViewsPanel() {
+  const list = useServerFn(adminListJobs);
+  const jobs = useQuery({ queryKey: ["admin-jobs"], queryFn: () => list({}) });
+  const rows = [...((jobs.data ?? []) as any[])].sort(
+    (a, b) => (b.views_count ?? 0) - (a.views_count ?? 0),
+  );
+  const total = rows.reduce((sum, r) => sum + (r.views_count ?? 0), 0);
+
+  if (jobs.isLoading) return <Loader2 className="h-5 w-5 animate-spin" />;
+
+  return (
+    <div>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-2xl font-extrabold">{total}</p>
+        <p className="text-xs text-muted-foreground">Visualizações totais em {rows.length} vagas</p>
+      </div>
+      <ul className="mt-4 divide-y divide-border rounded-2xl border border-border bg-card">
+        {rows.map((j) => (
+          <li key={j.id} className="p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{j.title}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {j.company_name} · {j.status}
+                </p>
+              </div>
+              <span className="shrink-0 text-sm font-extrabold">{j.views_count ?? 0}</span>
+            </div>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{
+                  width: `${total ? Math.round(((j.views_count ?? 0) / total) * 100) : 0}%`,
+                }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

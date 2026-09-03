@@ -89,18 +89,25 @@ export const adminSaveJob = createServerFn({ method: "POST" })
   .inputValidator((input: AdminJobInput) => input)
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
+    const stamp = Date.now().toString(36);
+    const fallbackSlug = (data.title || "vaga")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
     const row = {
-      title: data.title,
-      slug: data.slug,
-      company_name: data.company_name,
-      location: data.location,
-      category: data.category,
-      job_type: data.job_type,
-      experience_level: data.experience_level,
-      summary: data.summary,
-      description: data.description,
+      title: data.title?.trim() || "Vaga sem título",
+      slug: data.slug?.trim() || `${fallbackSlug}-${stamp}`,
+      company_name: data.company_name?.trim() || "Empresa confidencial",
+      location: data.location?.trim() || "Moçambique",
+      category: data.category?.trim() || "Geral",
+      job_type: data.job_type || "tempo_inteiro",
+      experience_level: data.experience_level || "junior",
+      summary: data.summary?.trim() || "Consulte os detalhes desta vaga.",
+      description: data.description?.trim() || "Sem descrição detalhada.",
       image_url: data.image_url || null,
-      status: data.status,
+      status: data.status || "publicada",
       is_featured: data.is_featured,
       salary_min: data.salary_min,
       salary_max: data.salary_max,
