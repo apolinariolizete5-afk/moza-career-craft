@@ -1,6 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 
-type ParseInput = { mimeType: string; fileName: string; base64: string };
+type ParseInput = {
+  mimeType: string;
+  fileName: string;
+  base64: string;
+};
 
 export const parseCvFile = createServerFn({ method: "POST" })
   .inputValidator((data: ParseInput) => {
@@ -10,66 +14,176 @@ export const parseCvFile = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data }) => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) return { ok: false as const, error: "IA não configurada." };
+    // Chave própria da Google Gemini
+    const apiKey = process.env["GEMINI_API_KEY"];
+
+    if (!apiKey) {
+      return {
+        ok: false as const,
+        error: "IA não configurada.",
+      };
+    }
 
     const isImage = data.mimeType.startsWith("image/");
-    const isPdf = data.mimeType === "application/pdf" || data.fileName.toLowerCase().endsWith(".pdf");
+    const isPdf =
+      data.mimeType === "application/pdf" ||
+      data.fileName.toLowerCase().endsWith(".pdf");
+
     if (!isImage && !isPdf) {
       return {
         ok: false as const,
-        error: "Formato não suportado. Envie o CV em PDF ou uma fotografia (JPG/PNG).",
+        error:
+          "Formato não suportado. Envie o CV em PDF ou uma fotografia (JPG/PNG).",
       };
     }
 
     const instruction =
-      "Extrai os dados deste currículo e devolve APENAS JSON válido com as chaves: " +
+      "Extrai os dados deste currículo e devolve APENAS JSON válido. " +
+      "Usa exactamente estas chaves: " +
       "fullName, title, email, phone, location, summary, " +
-      "experiences (array de {role, company, period, description}), " +
-      "education (array de {course, school, period}), skills (texto separado por vírgulas), " +
-      "languages (texto separado por vírgulas). Usa português. Campos desconhecidos ficam vazios.";
+      "experiences (array de objetos com role, company, period, description), " +
+      "education (array de objetos com course, school, period), " +
+      "skills (texto separado por vírgulas), " +
+      "languages (texto separado por vírgulas). " +
+      "Usa português. Campos desconhecidos ficam vazios.";
 
-    const content = isImage
-      ? [
-          { type: "text", text: instruction },
-          { type: "image_url", image_url: { url: `data:${data.mimeType};base64,${data.base64}` } },
-        ]
-      : [
-          { type: "text", text: instruction },
-          {
-            type: "file",
-            file: { filename: data.fileName, file_data: `data:application/pdf;base64,${data.base64}` },
+    // Conteúdo enviado directamente para a Gemini API
+    const parts: Array<Record<string, unknown>> = [
+      {
+        text: instruction,
+      },
+    ];
+
+    if (isImage) {
+      parts.push({
+        inline_data: {
+          mime_type: data.mimeType,
+          data: data.base64,
+        },
+      });
+    } else {
+      parts.push({
+        inline_data: {
+          mime_type: "application/pdf",
+          data: data.base64,
+        },
+      });
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(
+        apiKey
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts,
+            },
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
           },
-        ];
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { "content-type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content }],
-        response_format: { type: "json_object" },
-      }),
-    });
+        }),
+      }
+    );
 
     if (!response.ok) {
       const text = await response.text();
-      console.error("AI parse failed", response.status, text);
-      if (response.status === 429) return { ok: false as const, error: "Muitos pedidos. Tente daqui a pouco." };
-      if (response.status === 402)
-        return { ok: false as const, error: "Créditos de IA esgotados. Contacte o administrador." };
-      return { ok: false as const, error: "Não foi possível ler o ficheiro. Tente outro formato." };
+
+      console.error("Gemini CV parse failed:", response.status, text);
+
+      if (response.status === 400) {
+        return {
+          ok: false as const,
+          error: "Pedido inválido. Verifique o ficheiro enviado.",
+        };
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        return {
+          ok: false as const,
+          error: "A chave da Gemini API é inválida ou não está autorizada.",
+        };
+      }
+
+      if (response.status === 429) {
+        return {
+          ok: false as const,
+          error: "Limite da Gemini API atingido. Tente novamente mais tarde.",
+        };
+      }
+
+      return {
+        ok: false as const,
+        error: "Não foi possível ler o ficheiro. Tente outro formato.",
+      };
     }
 
-    const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
-    const raw = json.choices?.[0]?.message?.content ?? "";
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) return { ok: false as const, error: "Não foi possível interpretar o CV." };
+    const json = (await response.json()) as {
+      candidates?: Array<{
+        content?: {
+          parts?: Array<{
+            text?: string;
+          }>;
+        };
+      }>;
+    };
+
+    const raw =
+      json.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text ?? "")
+        .join("") ?? "";
+
+    if (!raw) {
+      return {
+        ok: false as const,
+        error: "A Gemini não devolveu os dados do CV.",
+      };
+    }
+
+    // Limpa possíveis blocos Markdown caso o modelo os devolva
+    const cleaned = raw
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
 
     try {
-      JSON.parse(match[0]);
-      return { ok: true as const, cvJson: match[0] };
+      const parsed = JSON.parse(cleaned);
+
+      return {
+        ok: true as const,
+        cvJson: JSON.stringify(parsed),
+      };
     } catch {
-      return { ok: false as const, error: "Não foi possível interpretar o CV." };
+      // Fallback caso venha algum texto antes/depois do JSON
+      const match = cleaned.match(/\{[\s\S]*\}/);
+
+      if (!match) {
+        return {
+          ok: false as const,
+          error: "Não foi possível interpretar o CV.",
+        };
+      }
+
+      try {
+        JSON.parse(match[0]);
+
+        return {
+          ok: true as const,
+          cvJson: match[0],
+        };
+      } catch {
+        return {
+          ok: false as const,
+          error: "Não foi possível interpretar o CV.",
+        };
+      }
     }
   });
