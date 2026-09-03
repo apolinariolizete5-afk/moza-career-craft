@@ -15,6 +15,15 @@ export function JobCard({ job }: { job: JobListItem }) {
 
   return (
     <article className="group relative rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-[var(--shadow-card)]">
+      {job.image_url ? (
+        <img
+          src={job.image_url}
+          alt={`Imagem da vaga ${job.title}`}
+          loading="lazy"
+          className="mb-3 h-32 w-full rounded-xl object-cover sm:h-40"
+        />
+      ) : null}
+
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
         <div className="flex min-w-0 items-start gap-3">
           <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-primary-soft text-primary">
