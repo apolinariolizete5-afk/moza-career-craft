@@ -33,6 +33,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/useSession";
 import { getJobBySlug, registerJobView } from "@/lib/jobs.functions";
+import { SUPPORT_EMAIL, WHATSAPP_CHANNEL_URL } from "@/lib/site";
 import {
   EXPERIENCE_LABELS,
   JOB_TYPE_LABELS,
@@ -144,7 +145,19 @@ function ApplyDialog({ job }: { job: JobDetail }) {
     },
     onSuccess: () => {
       setOpen(false);
-      toast.success("Candidatura enviada com sucesso!");
+      toast.success("Candidatura registada! A abrir a app de email...");
+      const to = job.apply_email || SUPPORT_EMAIL;
+      const subject = `Candidatura: ${job.title} — ${job.company_name}`;
+      const body = [
+        `Nome: ${form.full_name || user?.email || ""}`,
+        `Email: ${form.email || user?.email || ""}`,
+        `Telefone: ${form.phone || "—"}`,
+        "",
+        form.cover_message || "",
+        "",
+        "Enviado através do Moza Empregos.",
+      ].join("\n");
+      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -378,6 +391,30 @@ function VagaPage() {
             )}
           </section>
         )}
+        <section className="mt-8 rounded-3xl border border-accent/30 bg-accent-soft/60 p-5">
+          <h2 className="text-base font-extrabold">
+            Talvez a sua candidatura seja rejeitada por causa do CV
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Mais de 70% dos CVs são recusados na primeira leitura. Crie em minutos um CV profissional
+            com modelos premium e aumente as suas hipóteses nesta vaga.
+          </p>
+          <Button asChild className="mt-3">
+            <Link to="/criar-cv">Criar o meu CV agora</Link>
+          </Button>
+        </section>
+
+        <section className="mt-4 rounded-3xl border border-border bg-card p-5">
+          <h2 className="text-base font-extrabold">Receba vagas no WhatsApp</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Entre no nosso canal e seja o primeiro a saber das novas vagas em Moçambique.
+          </p>
+          <Button asChild variant="outline" className="mt-3">
+            <a href={WHATSAPP_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+              Entrar no canal de WhatsApp
+            </a>
+          </Button>
+        </section>
       </article>
     </AppShell>
   );
