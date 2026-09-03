@@ -20,6 +20,7 @@ interface JobRow {
   salary_currency: string;
   summary: string;
   is_featured: boolean;
+  image_url?: string | null;
   published_at: string;
   companies?: { slug: string; logo_url: string | null; description?: string | null; website?: string | null } | null;
 }
@@ -41,12 +42,13 @@ function toListItem(row: JobRow): JobListItem {
     salary_currency: row.salary_currency,
     summary: row.summary,
     is_featured: row.is_featured,
+    image_url: row.image_url ?? null,
     published_at: row.published_at,
   };
 }
 
 const LIST_COLUMNS =
-  "id, slug, title, company_name, location, category, job_type, experience_level, salary_min, salary_max, salary_currency, summary, is_featured, published_at, companies(slug, logo_url)";
+  "id, slug, title, company_name, location, category, job_type, experience_level, salary_min, salary_max, salary_currency, summary, is_featured, image_url, published_at, companies(slug, logo_url)";
 
 export const listJobs = createServerFn({ method: "GET" })
   .inputValidator((input: JobFiltersInput | undefined) => input ?? {})

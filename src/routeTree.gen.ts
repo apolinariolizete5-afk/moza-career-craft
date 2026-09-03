@@ -16,6 +16,7 @@ import { Route as CriarCvRouteImport } from './routes/criar-cv'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PesquisarRouteImport } from './routes/pesquisar'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as EmpresasSlugRouteImport } from './routes/empresas.$slug'
 import { Route as VagasIndexRouteImport } from './routes/vagas.index'
@@ -57,6 +58,11 @@ const PesquisarRoute = PesquisarRouteImport.update({
   path: '/pesquisar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   id: '/empresas/',
   path: '/empresas/',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRoute
   '/pesquisar': typeof PesquisarRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/empresas/$slug': typeof EmpresasSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRoute
   '/pesquisar': typeof PesquisarRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/empresas/$slug': typeof EmpresasSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas': typeof EmpresasIndexRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRoute
   '/pesquisar': typeof PesquisarRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/empresas/$slug': typeof EmpresasSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/notificacoes'
     | '/perfil'
     | '/pesquisar'
+    | '/privacidade'
     | '/empresas/$slug'
     | '/vagas/$slug'
     | '/empresas/'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/notificacoes'
     | '/perfil'
     | '/pesquisar'
+    | '/privacidade'
     | '/empresas/$slug'
     | '/vagas/$slug'
     | '/empresas'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/notificacoes'
     | '/perfil'
     | '/pesquisar'
+    | '/privacidade'
     | '/empresas/$slug'
     | '/vagas/$slug'
     | '/empresas/'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   NotificacoesRoute: typeof NotificacoesRoute
   PerfilRoute: typeof PerfilRoute
   PesquisarRoute: typeof PesquisarRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   EmpresasSlugRoute: typeof EmpresasSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PesquisarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresas/': {
       id: '/empresas/'
       path: '/empresas'
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificacoesRoute: NotificacoesRoute,
   PerfilRoute: PerfilRoute,
   PesquisarRoute: PesquisarRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   EmpresasSlugRoute: EmpresasSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
