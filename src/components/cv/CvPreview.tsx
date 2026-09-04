@@ -117,9 +117,9 @@ export function CvPreview({
     light = false,
   }: {
     children: React.ReactNode;
-    color?: string;
-    number?: string;
-    light?: boolean;
+    color?: string | undefined;
+    number?: string | undefined;
+    light?: boolean | undefined;
   }) => (
     <div className="flex items-center gap-2">
       {number && (
@@ -146,7 +146,7 @@ export function CvPreview({
   const Line = ({
     color = accent,
   }: {
-    color?: string;
+    color?: string | undefined;
   }) => (
     <div
       className="mt-2 h-px w-full"
@@ -159,9 +159,9 @@ export function CvPreview({
     number,
     light = false,
   }: {
-    color?: string;
-    number?: string;
-    light?: boolean;
+    color?: string | undefined;
+    number?: string | undefined;
+    light?: boolean | undefined;
   }) =>
     data.summary ? (
       <section className="mt-5">

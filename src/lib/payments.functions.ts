@@ -191,7 +191,7 @@ export const createCvPayment = createServerFn({
     };
 
     if (data.method !== "card") {
-      chargeBody.msisdn = data.msisdn;
+      chargeBody["msisdn"] = data.msisdn;
     }
 
     try {

@@ -401,8 +401,30 @@ export function saveCv(data: CvData) {
   }
 }
 
-export function previewData(): CvData {
-  return {
-    ...SAMPLE_CV,
-  };
+export function previewData(data?: CvData): CvData {
+  if (!data) {
+    return { ...SAMPLE_CV };
   }
+
+  const text = (value: string | undefined, fallback: string) =>
+    value && value.trim() ? value : fallback;
+
+  return {
+    ...data,
+    fullName: text(data.fullName, SAMPLE_CV.fullName),
+    title: text(data.title, SAMPLE_CV.title),
+    summary: text(data.summary, SAMPLE_CV.summary),
+    email: text(data.email, SAMPLE_CV.email),
+    phone: text(data.phone, SAMPLE_CV.phone),
+    location: text(data.location, SAMPLE_CV.location),
+    photo: data.photo || SAMPLE_CV.photo,
+    experiences: data.experiences?.some((e) => e.role || e.company)
+      ? data.experiences
+      : SAMPLE_CV.experiences,
+    education: data.education?.some((e) => e.course || e.school)
+      ? data.education
+      : SAMPLE_CV.education,
+    skills: data.skills?.length ? data.skills : SAMPLE_CV.skills,
+    languages: data.languages?.length ? data.languages : SAMPLE_CV.languages,
+  };
+}

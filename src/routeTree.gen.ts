@@ -21,7 +21,7 @@ import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as EmpresasSlugRouteImport } from './routes/empresas.$slug'
 import { Route as VagasIndexRouteImport } from './routes/vagas.index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
-import { Route as ApiPublicPaysuiteWebhookRouteImport } from './routes/api/public/paysuite-webhook'
+import { Route as ApiPublicNetshopWebhookRouteImport } from './routes/api/public/netshop-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,12 +83,11 @@ const VagasSlugRoute = VagasSlugRouteImport.update({
   path: '/vagas/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicPaysuiteWebhookRoute =
-  ApiPublicPaysuiteWebhookRouteImport.update({
-    id: '/api/public/paysuite-webhook',
-    path: '/api/public/paysuite-webhook',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const ApiPublicNetshopWebhookRoute = ApiPublicNetshopWebhookRouteImport.update({
+  id: '/api/public/netshop-webhook',
+  path: '/api/public/netshop-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,7 +102,7 @@ export interface FileRoutesByFullPath {
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/vagas/': typeof VagasIndexRoute
-  '/api/public/paysuite-webhook': typeof ApiPublicPaysuiteWebhookRoute
+  '/api/public/netshop-webhook': typeof ApiPublicNetshopWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,7 +117,7 @@ export interface FileRoutesByTo {
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas': typeof EmpresasIndexRoute
   '/vagas': typeof VagasIndexRoute
-  '/api/public/paysuite-webhook': typeof ApiPublicPaysuiteWebhookRoute
+  '/api/public/netshop-webhook': typeof ApiPublicNetshopWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,7 +133,7 @@ export interface FileRoutesById {
   '/vagas/$slug': typeof VagasSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/vagas/': typeof VagasIndexRoute
-  '/api/public/paysuite-webhook': typeof ApiPublicPaysuiteWebhookRoute
+  '/api/public/netshop-webhook': typeof ApiPublicNetshopWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,7 +150,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/empresas/'
     | '/vagas/'
-    | '/api/public/paysuite-webhook'
+    | '/api/public/netshop-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,7 +165,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/empresas'
     | '/vagas'
-    | '/api/public/paysuite-webhook'
+    | '/api/public/netshop-webhook'
   id:
     | '__root__'
     | '/'
@@ -181,7 +180,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/empresas/'
     | '/vagas/'
-    | '/api/public/paysuite-webhook'
+    | '/api/public/netshop-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,7 +196,7 @@ export interface RootRouteChildren {
   VagasSlugRoute: typeof VagasSlugRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   VagasIndexRoute: typeof VagasIndexRoute
-  ApiPublicPaysuiteWebhookRoute: typeof ApiPublicPaysuiteWebhookRoute
+  ApiPublicNetshopWebhookRoute: typeof ApiPublicNetshopWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -286,11 +285,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VagasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/paysuite-webhook': {
-      id: '/api/public/paysuite-webhook'
-      path: '/api/public/paysuite-webhook'
-      fullPath: '/api/public/paysuite-webhook'
-      preLoaderRoute: typeof ApiPublicPaysuiteWebhookRouteImport
+    '/api/public/netshop-webhook': {
+      id: '/api/public/netshop-webhook'
+      path: '/api/public/netshop-webhook'
+      fullPath: '/api/public/netshop-webhook'
+      preLoaderRoute: typeof ApiPublicNetshopWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -309,7 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   VagasSlugRoute: VagasSlugRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
   VagasIndexRoute: VagasIndexRoute,
-  ApiPublicPaysuiteWebhookRoute: ApiPublicPaysuiteWebhookRoute,
+  ApiPublicNetshopWebhookRoute: ApiPublicNetshopWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
