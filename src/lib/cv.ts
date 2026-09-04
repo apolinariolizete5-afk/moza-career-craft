@@ -11,6 +11,35 @@ export type CvEducation = {
   period: string;
 };
 
+export type CvLayout =
+  | "editorial"
+  | "executive"
+  | "corporate"
+  | "swiss"
+  | "minimal"
+  | "timeline"
+  | "creative"
+  | "academic"
+  | "tech"
+  | "portfolio"
+  | "first-job"
+  | "finance"
+  | "development"
+  | "ats"
+  | "mozambique";
+
+export type CvTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  layout: CvLayout;
+  accent: string;
+  surface: string;
+  photoShape: "circle" | "square" | "none";
+  font: "sans" | "serif" | "display";
+  premium: boolean;
+};
+
 export type CvData = {
   fullName: string;
   title: string;
@@ -51,396 +80,282 @@ export const EMPTY_CV: CvData = {
   ],
   skills: "",
   languages: "",
-  templateId: "maputo-sidebar",
+  templateId: "editorial",
 };
 
-/** Fotografia de exemplo usada nas amostras dos modelos. */
-export const SAMPLE_PHOTO =
-  "/__l5e/assets-v1/84a8c7a3-478d-4be2-af74-37f63a62b315/cv-sample-photo.jpg";
-
-/** Dados de demonstração usados nas miniaturas quando o utilizador ainda não preencheu nada. */
 export const SAMPLE_CV: CvData = {
-  ...EMPTY_CV,
-
   fullName: "Ana Macuácua",
-
   title: "Gestora de Operações",
-
   email: "ana.macuacua@email.com",
-
-  phone: "+258 84 000 0000",
-
+  phone: "+258 84 123 4567",
   location: "Maputo, Moçambique",
-
-  photo: SAMPLE_PHOTO,
-
+  photo: "",
   summary:
-    "Gestora com 8 anos de experiência em operações, logística e liderança de equipas multidisciplinares. Historial comprovado na redução de custos, na melhoria de processos e no cumprimento de metas trimestrais em empresas de grande dimensão em Moçambique.",
-
+    "Profissional de operações com experiência em gestão administrativa, coordenação de equipas e melhoria de processos. Orientada para resultados, organização e qualidade operacional.",
   experiences: [
     {
       role: "Gestora de Operações",
-      company: "Grupo Zambeze, Maputo",
-      period: "2022 — Atual",
+      company: "Empresa Exemplo",
+      period: "2022 — Presente",
       description:
-        "Coordenação de uma equipa de 12 pessoas em três armazéns; redução de 18% nos custos logísticos e aumento de 25% na pontualidade das entregas.",
+        "Coordenação das operações diárias, acompanhamento de equipas, controlo de processos e implementação de melhorias para aumentar a eficiência.",
     },
     {
-      role: "Supervisora de Logística",
-      company: "TecnoMoz, Matola",
+      role: "Coordenadora Administrativa",
+      company: "Grupo Empresarial",
       period: "2019 — 2022",
       description:
-        "Gestão de stock e frota, negociação com fornecedores e implementação de um sistema de controlo que eliminou 90% das rupturas.",
+        "Gestão administrativa, relacionamento com fornecedores, organização documental e apoio à gestão financeira.",
     },
     {
       role: "Assistente Administrativa",
-      company: "Banco Horizonte, Beira",
+      company: "Serviços & Consultoria",
       period: "2017 — 2019",
       description:
-        "Apoio administrativo, atendimento a clientes empresariais e elaboração de relatórios mensais de desempenho.",
+        "Apoio administrativo, atendimento ao cliente, preparação de relatórios e organização de documentação.",
     },
   ],
-
   education: [
     {
-      course: "Mestrado em Gestão de Operações",
+      course: "Licenciatura em Gestão",
       school: "Universidade Eduardo Mondlane",
-      period: "2020 — 2022",
+      period: "2014 — 2018",
     },
     {
-      course: "Licenciatura em Gestão de Empresas",
-      school: "Universidade Eduardo Mondlane",
-      period: "2015 — 2019",
+      course: "Gestão Empresarial",
+      school: "Instituto Superior de Administração",
+      period: "2019",
     },
   ],
-
   skills:
-    "Gestão de equipas, Logística e cadeia de abastecimento, Excel avançado, Análise de dados, Negociação, Gestão de orçamentos, Atendimento ao cliente",
-
-  languages:
-    "Português (nativo), Inglês (avançado), Changana (fluente)",
+    "Gestão de operações, Liderança, Excel, Gestão administrativa, Comunicação, Planeamento",
+  languages: "Português — Nativo, Inglês — Intermédio",
+  templateId: "editorial",
 };
 
-/**
- * Estruturas visuais disponíveis para os modelos de CV.
- *
- * Os primeiros 10 layouts já existiam no projeto.
- * Os últimos 5 são novos e serão implementados no CvPreview:
- *
- * ats          → ATS Pro
- * first-job    → Primeiro Emprego
- * tech         → Tecnologia
- * portfolio    → Portfólio
- * mozambique   → Moçambique
- */
-export type CvLayout =
-  | "sidebar-dark"
-  | "sidebar-right"
-  | "header-band"
-  | "centered-arch"
-  | "timeline"
-  | "two-tone"
-  | "monogram"
-  | "corner-photo"
-  | "cards"
-  | "minimal"
-  | "ats"
-  | "first-job"
-  | "tech"
-  | "portfolio"
-  | "mozambique";
-
-export type CvTemplate = {
-  id: string;
-  name: string;
-  layout: CvLayout;
-  accent: string;
-
-  /** Cor de fundo da coluna/cabeçalho. */
-  surface: string;
-
-  photoShape: "circle" | "square";
-
-  font?: "sans" | "serif";
-
-  premium: boolean;
-};
+/*
+|--------------------------------------------------------------------------
+| 15 MODELOS PREMIUM
+|--------------------------------------------------------------------------
+|
+| Cada modelo tem uma linguagem visual própria.
+|
+| 01 Editorial       — revista / alto padrão
+| 02 Executive       — executivo premium
+| 03 Corporate       — multinacional
+| 04 Swiss           — design suíço
+| 05 Minimal         — ultra clean
+| 06 Timeline        — carreira cronológica
+| 07 Creative        — criativo
+| 08 Academic        — académico
+| 09 Technology      — tecnologia
+| 10 Portfolio       — portfólio
+| 11 First Job       — primeiro emprego
+| 12 Finance         — finanças
+| 13 Development     — ONG / desenvolvimento
+| 14 ATS              — recrutamento
+| 15 Mozambique      — identidade moçambicana
+|
+|--------------------------------------------------------------------------
+*/
 
 export const CV_TEMPLATES: CvTemplate[] = [
-  /*
-   * MODELOS PRINCIPAIS
-   */
-
   {
-    id: "maputo-sidebar",
-    name: "Maputo",
-    layout: "sidebar-dark",
-    accent: "#0F5132",
-    surface: "#0F5132",
-    photoShape: "circle",
-    premium: false,
+    id: "editorial",
+    name: "Editorial",
+    description:
+      "Visual sofisticado inspirado em revistas e portfolios profissionais.",
+    layout: "editorial",
+    accent: "#111827",
+    surface: "#F8F7F4",
+    photoShape: "square",
+    font: "serif",
+    premium: true,
   },
 
   {
     id: "executive",
     name: "Executive",
-    layout: "header-band",
-    accent: "#C9A227",
-    surface: "#111827",
+    description:
+      "Elegante e poderoso para gestores, directores e profissionais sénior.",
+    layout: "executive",
+    accent: "#172033",
+    surface: "#F5F6F8",
     photoShape: "circle",
-    premium: false,
+    font: "sans",
+    premium: true,
   },
 
   {
     id: "corporate",
     name: "Corporate",
-    layout: "sidebar-right",
-    accent: "#12324F",
-    surface: "#EEF2F7",
-    photoShape: "square",
+    description:
+      "Estrutura internacional para bancos, empresas e grandes organizações.",
+    layout: "corporate",
+    accent: "#1E3A5F",
+    surface: "#FFFFFF",
+    photoShape: "circle",
+    font: "sans",
     premium: false,
   },
 
   {
-    id: "modern",
-    name: "Modern",
-    layout: "two-tone",
-    accent: "#0E7C66",
-    surface: "#0E7C66",
-    photoShape: "circle",
-    premium: false,
+    id: "swiss",
+    name: "Swiss",
+    description:
+      "Design suíço com grid rigoroso, tipografia forte e máximo equilíbrio.",
+    layout: "swiss",
+    accent: "#111111",
+    surface: "#FFFFFF",
+    photoShape: "none",
+    font: "sans",
+    premium: true,
   },
 
   {
     id: "minimal",
     name: "Minimal",
+    description:
+      "Minimalismo premium com muito espaço e leitura extremamente limpa.",
     layout: "minimal",
-    accent: "#2B2B2B",
-    surface: "#F5F5F5",
-    photoShape: "square",
+    accent: "#18181B",
+    surface: "#FFFFFF",
+    photoShape: "none",
+    font: "sans",
     premium: false,
   },
 
-  /*
-   * MODELOS PREMIUM EXISTENTES
-   */
-
   {
-    id: "beira",
-    name: "Beira",
-    layout: "centered-arch",
-    accent: "#1B6CA8",
-    surface: "#DCEAF6",
-    photoShape: "circle",
-    premium: true,
-  },
-
-  {
-    id: "nampula",
-    name: "Nampula",
-    layout: "corner-photo",
-    accent: "#7A3E9D",
-    surface: "#4C2A63",
-    photoShape: "square",
-    premium: true,
-  },
-
-  {
-    id: "elegant",
-    name: "Elegant",
-    layout: "monogram",
-    accent: "#5A3E2B",
-    surface: "#F3EDE6",
-    photoShape: "circle",
-    font: "serif",
-    premium: true,
-  },
-
-  {
-    id: "impact",
-    name: "Impact",
-    layout: "corner-photo",
-    accent: "#C0392B",
-    surface: "#1C1C1C",
-    photoShape: "square",
-    premium: true,
-  },
-
-  {
-    id: "focus",
-    name: "Focus",
+    id: "timeline",
+    name: "Timeline",
+    description:
+      "Apresenta a evolução da carreira através de uma linha cronológica.",
     layout: "timeline",
-    accent: "#00695C",
-    surface: "#E4F1EE",
+    accent: "#4F46E5",
+    surface: "#FFFFFF",
     photoShape: "circle",
-    premium: true,
+    font: "sans",
+    premium: false,
   },
 
   {
-    id: "clarity",
-    name: "Clarity",
-    layout: "cards",
-    accent: "#37474F",
-    surface: "#ECEFF1",
-    photoShape: "circle",
-    premium: true,
-  },
-
-  {
-    id: "prestige",
-    name: "Prestige",
-    layout: "monogram",
-    accent: "#8E6C0A",
-    surface: "#FBF6E6",
-    photoShape: "circle",
-    font: "serif",
-    premium: true,
-  },
-
-  {
-    id: "startup",
-    name: "Startup",
-    layout: "cards",
-    accent: "#6C3CD1",
-    surface: "#F1ECFB",
-    photoShape: "circle",
+    id: "creative",
+    name: "Creative",
+    description:
+      "Composição ousada para marketing, comunicação, design e áreas criativas.",
+    layout: "creative",
+    accent: "#7C3AED",
+    surface: "#FAF5FF",
+    photoShape: "square",
+    font: "display",
     premium: true,
   },
 
   {
     id: "academic",
     name: "Academic",
-    layout: "timeline",
-    accent: "#1A237E",
-    surface: "#E8EAF6",
-    photoShape: "square",
-    font: "serif",
-    premium: true,
-  },
-
-  {
-    id: "technical",
-    name: "Technical",
-    layout: "sidebar-dark",
-    accent: "#00A3C4",
-    surface: "#00344C",
-    photoShape: "square",
-    premium: true,
-  },
-
-  {
-    id: "creative",
-    name: "Creative",
-    layout: "two-tone",
-    accent: "#D81B60",
-    surface: "#D81B60",
-    photoShape: "circle",
-    premium: true,
-  },
-
-  {
-    id: "graduate",
-    name: "Graduate",
-    layout: "centered-arch",
-    accent: "#2E7D32",
-    surface: "#E3F0E4",
-    photoShape: "circle",
-    premium: true,
-  },
-
-  {
-    id: "manager",
-    name: "Manager",
-    layout: "header-band",
-    accent: "#90A4AE",
-    surface: "#2C3A41",
-    photoShape: "circle",
-    premium: true,
-  },
-
-  {
-    id: "consultant",
-    name: "Consultant",
-    layout: "sidebar-right",
-    accent: "#0B4F6C",
-    surface: "#E7F0F4",
-    photoShape: "square",
-    premium: true,
-  },
-
-  {
-    id: "zambeze",
-    name: "Zambeze",
-    layout: "minimal",
-    accent: "#0F8B8D",
+    description:
+      "Estrutura formal para investigadores, professores e profissionais académicos.",
+    layout: "academic",
+    accent: "#374151",
     surface: "#FFFFFF",
-    photoShape: "circle",
+    photoShape: "none",
     font: "serif",
-    premium: true,
-  },
-
-  /*
-   * NOVOS MODELOS
-   *
-   * Estes são os 5 modelos que vamos transformar
-   * em layouts visualmente diferentes.
-   */
-
-  {
-    id: "ats-pro",
-    name: "ATS Pro",
-    layout: "ats",
-    accent: "#1F2937",
-    surface: "#FFFFFF",
-    photoShape: "square",
-    premium: false,
-  },
-
-  {
-    id: "first-job",
-    name: "Primeiro Emprego",
-    layout: "first-job",
-    accent: "#2563EB",
-    surface: "#EFF6FF",
-    photoShape: "circle",
     premium: false,
   },
 
   {
     id: "tech",
     name: "Technology",
+    description:
+      "Visual moderno inspirado em produtos digitais e empresas de tecnologia.",
     layout: "tech",
-    accent: "#0891B2",
-    surface: "#0F172A",
+    accent: "#06B6D4",
+    surface: "#0B1120",
     photoShape: "square",
+    font: "sans",
     premium: true,
   },
 
   {
     id: "portfolio",
-    name: "Portfólio",
+    name: "Portfolio",
+    description:
+      "CV visual para profissionais que precisam destacar projectos e competências.",
     layout: "portfolio",
-    accent: "#7C3AED",
+    accent: "#8B5CF6",
     surface: "#F5F3FF",
     photoShape: "square",
+    font: "display",
     premium: true,
+  },
+
+  {
+    id: "first-job",
+    name: "Primeiro Emprego",
+    description:
+      "Pensado para estudantes, recém-formados e candidatos sem muita experiência.",
+    layout: "first-job",
+    accent: "#2563EB",
+    surface: "#EFF6FF",
+    photoShape: "circle",
+    font: "sans",
+    premium: false,
+  },
+
+  {
+    id: "finance",
+    name: "Finance",
+    description:
+      "Sério, preciso e elegante para banca, contabilidade e finanças.",
+    layout: "finance",
+    accent: "#0F3D3E",
+    surface: "#F7FAFA",
+    photoShape: "none",
+    font: "serif",
+    premium: true,
+  },
+
+  {
+    id: "development",
+    name: "Development",
+    description:
+      "Estrutura profissional para ONG, desenvolvimento, projectos e organizações internacionais.",
+    layout: "development",
+    accent: "#166534",
+    surface: "#F0FDF4",
+    photoShape: "circle",
+    font: "sans",
+    premium: false,
+  },
+
+  {
+    id: "ats",
+    name: "ATS Pro",
+    description:
+      "Optimizado para sistemas automáticos de recrutamento e leitura de CVs.",
+    layout: "ats",
+    accent: "#111827",
+    surface: "#FFFFFF",
+    photoShape: "none",
+    font: "sans",
+    premium: false,
   },
 
   {
     id: "mozambique",
     name: "Moçambique",
+    description:
+      "Design premium inspirado na identidade visual e profissional de Moçambique.",
     layout: "mozambique",
-    accent: "#0F5132",
-    surface: "#F5F5F5",
+    accent: "#006B3C",
+    surface: "#F7F7F5",
     photoShape: "circle",
-    premium: false,
+    font: "sans",
+    premium: true,
   },
 ];
 
-/**
- * Chave usada para guardar o rascunho do CV
- * no armazenamento local do navegador.
- */
 export const CV_STORAGE_KEY = "moza-cv-draft";
 
 export function loadCv(): CvData {
@@ -451,12 +366,24 @@ export function loadCv(): CvData {
   try {
     const raw = window.localStorage.getItem(CV_STORAGE_KEY);
 
-    return raw
-      ? {
-          ...EMPTY_CV,
-          ...(JSON.parse(raw) as Partial<CvData>),
-        }
-      : EMPTY_CV;
+    if (!raw) {
+      return EMPTY_CV;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<CvData>;
+
+    return {
+      ...EMPTY_CV,
+      ...parsed,
+      experiences:
+        parsed.experiences?.length
+          ? parsed.experiences
+          : EMPTY_CV.experiences,
+      education:
+        parsed.education?.length
+          ? parsed.education
+          : EMPTY_CV.education,
+    };
   } catch {
     return EMPTY_CV;
   }
@@ -468,31 +395,14 @@ export function saveCv(data: CvData) {
   }
 
   try {
-    window.localStorage.setItem(
-      CV_STORAGE_KEY,
-      JSON.stringify(data),
-    );
+    window.localStorage.setItem(CV_STORAGE_KEY, JSON.stringify(data));
   } catch {
-    /* ignore quota errors */
+    // Ignora erros de armazenamento local.
   }
 }
 
-/**
- * Junta os dados do utilizador com o exemplo,
- * para que as miniaturas nunca fiquem vazias.
- */
-export function previewData(data: CvData): CvData {
-  const filled =
-    data.fullName ||
-    data.title ||
-    data.summary ||
-    data.experiences.some((e) => e.role);
-
-  return filled
-    ? data
-    : {
-        ...SAMPLE_CV,
-        photo: data.photo || SAMPLE_PHOTO,
-        templateId: data.templateId,
-      };
-    }
+export function previewData(): CvData {
+  return {
+    ...SAMPLE_CV,
+  };
+  }
