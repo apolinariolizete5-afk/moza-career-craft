@@ -77,7 +77,6 @@ const STEPS = [
 const TEMPLATE_FILTERS = [
   "Todos",
   "Premium",
-  "Gratuitos",
 ] as const;
 
 type TemplateFilter = (typeof TEMPLATE_FILTERS)[number];
