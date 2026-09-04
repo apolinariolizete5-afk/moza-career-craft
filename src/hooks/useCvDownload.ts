@@ -1,11 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSession } from "@/hooks/useSession";
-import { createCvPayment, getCvAccess, getCvPrice } from "@/lib/payments.functions";
+import {
+  createCvPayment,
+  getCvAccess,
+  getCvPrice,
+} from "@/lib/payments.functions";
 
-/** Controla o download do CV: só liberta depois do pagamento confirmado (PaySuite). */
+type PaymentMethod = "mpesa" | "emola" | "mkesh" | "card";
+
+/**
+ * Controla o download do CV.
+ *
+ * O PDF só fica disponível depois do pagamento confirmado.
+ * Para M-Pesa, e-Mola e mKesh, o número de telefone é enviado
+ * para a NetShop.
+ */
 export function useCvDownload() {
   const { user } = useSession();
+
   const access = useServerFn(getCvAccess);
   const price = useServerFn(getCvPrice);
   const pay = useServerFn(createCvPayment);
@@ -17,35 +30,100 @@ export function useCvDownload() {
 
   useEffect(() => {
     let active = true;
-    void price().then((r) => active && setAmount(r.price));
-    if (user) void access().then((r) => active && setPaid(r.paid));
-    else setPaid(false);
+
+    void price().then((r) => {
+      if (active) {
+        setAmount(r.price);
+      }
+    });
+
+    if (user) {
+      void access().then((r) => {
+        if (active) {
+          setPaid(r.paid);
+        }
+      });
+    } else {
+      setPaid(false);
+    }
+
     return () => {
       active = false;
     };
   }, [user, access, price]);
 
-  const download = useCallback(async () => {
-    if (paid) {
-      window.print();
-      return;
-    }
-    if (!user) {
-      setMessage("Inicie sessão para pagar e descarregar o seu CV.");
-      return;
-    }
-    setBusy(true);
-    setMessage("");
-    try {
-      const result = await pay({ data: { returnUrl: window.location.href } });
-      if (result.ok) window.location.href = result.checkoutUrl;
-      else setMessage(result.error);
-    } catch {
-      setMessage("Não foi possível iniciar o pagamento. Tente novamente.");
-    } finally {
-      setBusy(false);
-    }
-  }, [paid, user, pay]);
+  const download = useCallback(
+    async (
+      phone?: string,
+      method: PaymentMethod = "mpesa",
+    ) => {
+      if (paid) {
+        window.print();
+        return;
+      }
 
-  return { paid, amount, busy, message, download };
-}
+      if (!user) {
+        setMessage(
+          "Inicie sessão para pagar e descarregar o seu CV.",
+        );
+        return;
+      }
+
+      const normalizedPhone = (phone ?? "").trim();
+
+      if (method !== "card" && !normalizedPhone) {
+        setMessage(
+          "Introduza o número de telemóvel para continuar com o pagamento.",
+        );
+        return;
+      }
+
+      setBusy(true);
+      setMessage("");
+
+      try {
+        const result = await pay({
+          data: {
+            returnUrl: window.location.href,
+            method,
+            ...(method !== "card"
+              ? { msisdn: normalizedPhone }
+              : {}),
+          },
+        });
+
+        if (result.ok) {
+          if (result.checkoutUrl) {
+            window.location.href = result.checkoutUrl;
+          } else {
+            setMessage(
+              "Pagamento iniciado, mas a página de pagamento não foi encontrada.",
+            );
+          }
+        } else {
+          setMessage(result.error);
+        }
+      } catch (error) {
+        console.error(
+          "Erro ao iniciar pagamento do CV:",
+          error,
+        );
+
+        setMessage(
+          "Não foi possível iniciar o pagamento. Tente novamente.",
+        );
+      } finally {
+        setBusy(false);
+      }
+    },
+    [paid, user, pay],
+  );
+
+  return {
+    paid,
+    amount,
+    busy,
+    message,
+    download,
+  };
+    }
