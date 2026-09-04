@@ -157,14 +157,11 @@ function CriarCvPage() {
   const preview = previewData(data);
 
   const visibleTemplates =
-    CV_TEMPLATES.filter((tpl) => {
-      const matchesFilter =
-        templateFilter === "Todos" ||
-        (templateFilter === "Premium" &&
-          tpl.premium) ||
-        (templateFilter === "Gratuitos" &&
-          !tpl.premium);
-
+  CV_TEMPLATES.filter((tpl) => {
+    const matchesFilter =
+      templateFilter === "Todos" ||
+      (templateFilter === "Premium" &&
+        tpl.premium);
       const search =
         templateSearch.trim().toLowerCase();
 
