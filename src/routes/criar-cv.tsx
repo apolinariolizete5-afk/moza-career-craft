@@ -1159,7 +1159,7 @@ function CriarCvPage() {
             className="mt-3 w-full gap-1 print:hidden"
             disabled={pdf.busy}
             onClick={() =>
-              void pdf.download()
+              void pdf.download(data.phone, "mpesa")
             }
           >
             {pdf.busy ? (
