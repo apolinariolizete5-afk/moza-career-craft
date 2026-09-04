@@ -196,7 +196,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#FFFFFF",
     photoShape: "circle",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -222,7 +222,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#FFFFFF",
     photoShape: "none",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -235,7 +235,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#FFFFFF",
     photoShape: "circle",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -261,7 +261,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#FFFFFF",
     photoShape: "none",
     font: "serif",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -300,7 +300,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#EFF6FF",
     photoShape: "circle",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -326,7 +326,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#F0FDF4",
     photoShape: "circle",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
@@ -339,7 +339,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     surface: "#FFFFFF",
     photoShape: "none",
     font: "sans",
-    premium: false,
+    premium: true,
   },
 
   {
