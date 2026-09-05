@@ -97,9 +97,18 @@ export const adminSaveJob = createServerFn({ method: "POST" })
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+    let slug = data.slug?.trim() || `${fallbackSlug}-${stamp}`;
+    const { data: clash } = await context.supabase
+      .from("jobs")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (clash && (clash as { id: string }).id !== data.id) {
+      slug = `${slug}-${stamp}`;
+    }
     const row = {
       title: data.title?.trim() || "Vaga sem título",
-      slug: data.slug?.trim() || `${fallbackSlug}-${stamp}`,
+      slug,
       company_name: data.company_name?.trim() || "Empresa confidencial",
       location: data.location?.trim() || "Moçambique",
       category: data.category?.trim() || "Geral",
