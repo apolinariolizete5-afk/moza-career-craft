@@ -1126,32 +1126,33 @@ function CriarCvPage() {
 
           <div className="relative overflow-hidden rounded-[24px] border border-border bg-white shadow-sm print:border-0">
             <div className="origin-top-left [zoom:0.44] sm:[zoom:0.72] lg:[zoom:1] print:[zoom:1]">
-              <CvPreview
-                id="cv-print-area"
-                data={preview}
-                template={template}
-              />
-            </div>
+              <div id="cv-print-area" className="relative">
+                <CvPreview
+                  data={preview}
+                  template={template}
+                />
 
-            {!pdf.paid ? (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 grid select-none place-items-center overflow-hidden"
-              >
-                <div className="-rotate-30 space-y-6 text-center">
-                  {[0, 1, 2, 3, 4].map(
-                    (i) => (
-                      <p
-                        key={i}
-                        className="whitespace-nowrap text-3xl font-extrabold tracking-[0.3em] text-black/10 sm:text-4xl"
-                      >
-                        MOZA EMPREGOS · AMOSTRA
-                      </p>
-                    ),
-                  )}
-                </div>
+                {!pdf.paid ? (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 grid select-none place-items-center overflow-hidden"
+                  >
+                    <div className="-rotate-30 space-y-6 text-center">
+                      {[0, 1, 2, 3, 4].map(
+                        (i) => (
+                          <p
+                            key={i}
+                            className="whitespace-nowrap text-3xl font-extrabold tracking-[0.3em] text-black/20 sm:text-4xl"
+                          >
+                            MOZA EMPREGOS · AMOSTRA
+                          </p>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
+            </div>
           </div>
 
           <Button
