@@ -53,7 +53,8 @@ export const adminOverview = createServerFn({ method: "GET" })
       sb.from("cv_purchases").select("id", { count: "exact", head: true }).eq("status", "paid"),
       sb.from("jobs").select("title, slug, views_count").order("views_count", { ascending: false }).limit(8),
     ]);
-    const totalViews = ((top.data ?? []) as { views_count: number }[]).reduce(
+    const { data: allViews } = await sb.from("jobs").select("views_count");
+    const totalViews = ((allViews ?? []) as { views_count: number }[]).reduce(
       (sum, row) => sum + (row.views_count ?? 0),
       0,
     );
@@ -96,9 +97,18 @@ export const adminSaveJob = createServerFn({ method: "POST" })
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+    let slug = data.slug?.trim() || `${fallbackSlug}-${stamp}`;
+    const { data: clash } = await context.supabase
+      .from("jobs")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (clash && (clash as { id: string }).id !== data.id) {
+      slug = `${slug}-${stamp}`;
+    }
     const row = {
       title: data.title?.trim() || "Vaga sem título",
-      slug: data.slug?.trim() || `${fallbackSlug}-${stamp}`,
+      slug,
       company_name: data.company_name?.trim() || "Empresa confidencial",
       location: data.location?.trim() || "Moçambique",
       category: data.category?.trim() || "Geral",

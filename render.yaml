@@ -28,7 +28,13 @@ services:
         sync: false
       - key: LOVABLE_API_KEY
         sync: false
-      - key: PAYSUITE_API_KEY
+      - key: NETSHOP_API_KEY
         sync: false
-      - key: PAYSUITE_WEBHOOK_SECRET
+      - key: NETSHOP_WEBHOOK_SECRET
+        sync: false
+      - key: NETSHOP_WALLET_ID_1
+        sync: false
+      - key: NETSHOP_WALLET_ID_2
+        sync: false
+      - key: GEMINI_API_KEY
         sync: false
