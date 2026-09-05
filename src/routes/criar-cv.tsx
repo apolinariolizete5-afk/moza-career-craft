@@ -1178,6 +1178,17 @@ function CriarCvPage() {
                 }`}
           </Button>
 
+          {!pdf.paid ? (
+            <Button
+              variant="ghost"
+              className="mt-2 w-full print:hidden"
+              disabled={pdf.busy}
+              onClick={() => void pdf.recheck()}
+            >
+              Já paguei — verificar
+            </Button>
+          ) : null}
+
           {pdf.message ? (
             <p className="mt-2 text-center text-xs text-destructive print:hidden">
               {pdf.message}
