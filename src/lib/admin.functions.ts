@@ -200,8 +200,8 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as any);
     if (data.userId === context.userId) throw new Error("Não pode eliminar a sua própria conta.");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    await context.supabase.from("user_roles").delete().eq("user_id", data.userId);
+    const { error } = await context.supabase.from("profiles").delete().eq("id", data.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

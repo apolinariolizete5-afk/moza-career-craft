@@ -27,11 +27,13 @@ function getWalletId(walletId?: string): string {
 export const getCvPrice = createServerFn({
   method: "GET",
 }).handler(async () => {
-  const { supabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
+  const { createPublicServerClient } = await import(
+    "@/lib/supabase-public.server"
   );
 
-  const { data } = await supabaseAdmin
+  const supabase = createPublicServerClient();
+
+  const { data } = await supabase
     .from("app_settings")
     .select("value")
     .eq("key", "cv_price_mzn")
@@ -52,11 +54,7 @@ export const getCvAccess = createServerFn({
 })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await context.supabase
       .from("cv_purchases")
       .select("id")
       .eq("user_id", context.userId)
@@ -132,11 +130,7 @@ export const createCvPayment = createServerFn({
       };
     }
 
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
-
-    const { data: setting } = await supabaseAdmin
+    const { data: setting } = await context.supabase
       .from("app_settings")
       .select("value")
       .eq("key", "cv_price_mzn")
@@ -155,7 +149,7 @@ export const createCvPayment = createServerFn({
       `CV-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
         .toUpperCase();
 
-    const { error: purchaseError } = await supabaseAdmin
+    const { error: purchaseError } = await context.supabase
       .from("cv_purchases")
       .insert({
         user_id: context.userId,
@@ -254,7 +248,7 @@ export const createCvPayment = createServerFn({
       const chargeStatus =
         json?.status ?? "pending";
 
-      await supabaseAdmin
+      await context.supabase
         .from("cv_purchases")
         .update({
           provider_id: chargeId,
@@ -276,7 +270,7 @@ export const createCvPayment = createServerFn({
         error
       );
 
-      await supabaseAdmin
+      await context.supabase
         .from("cv_purchases")
         .update({
           status: "failed",

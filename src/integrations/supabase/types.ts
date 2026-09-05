@@ -390,6 +390,15 @@ export type Database = {
         Returns: boolean
       }
       increment_job_view: { Args: { _slug: string }; Returns: undefined }
+      netshop_apply_payment: {
+        Args: {
+          _method?: string
+          _provider_id?: string
+          _reference: string
+          _status: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "employer" | "user"
