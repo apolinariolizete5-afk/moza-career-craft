@@ -1,20 +1,31 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-/** Publishable-key Supabase client for public (anon) reads inside server handlers. */
-export function getPublicSupabase() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  const url = process.env["SUPABASE_URL"]!;
+/**
+ * Cliente Supabase para o servidor usando apenas a chave pública.
+ * Não depende da service role key.
+ */
+export function createPublicServerClient() {
+  const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
+
+  const key =
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ??
+    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+
+  if (!url || !key) {
+    throw new Error("Configuração Supabase em falta (URL / chave pública).");
+  }
+
   return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
+    auth: { persistSession: false },
     global: {
       fetch: (input, init) => {
-        const headers = new Headers(init?.headers);
-        if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
-          headers.delete("Authorization");
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
+          h.delete("Authorization");
         }
-        headers.set("apikey", key);
-        return fetch(input, { ...init, headers });
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
       },
     },
   });
