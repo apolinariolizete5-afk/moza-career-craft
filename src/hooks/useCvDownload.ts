@@ -119,11 +119,32 @@ export function useCvDownload() {
     [paid, user, pay],
   );
 
+  const recheck = useCallback(async () => {
+    if (!user) {
+      setMessage("Inicie sessão para verificar o pagamento.");
+      return;
+    }
+    setBusy(true);
+    setMessage("");
+    try {
+      const r = await access();
+      setPaid(r.paid);
+      if (!r.paid) {
+        setMessage("Ainda não recebemos a confirmação do pagamento. Tente daqui a instantes.");
+      }
+    } catch {
+      setMessage("Não foi possível verificar o pagamento.");
+    } finally {
+      setBusy(false);
+    }
+  }, [user, access]);
+
   return {
     paid,
     amount,
     busy,
     message,
     download,
+    recheck,
   };
-    }
+}
