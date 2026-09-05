@@ -53,7 +53,8 @@ export const adminOverview = createServerFn({ method: "GET" })
       sb.from("cv_purchases").select("id", { count: "exact", head: true }).eq("status", "paid"),
       sb.from("jobs").select("title, slug, views_count").order("views_count", { ascending: false }).limit(8),
     ]);
-    const totalViews = ((top.data ?? []) as { views_count: number }[]).reduce(
+    const { data: allViews } = await sb.from("jobs").select("views_count");
+    const totalViews = ((allViews ?? []) as { views_count: number }[]).reduce(
       (sum, row) => sum + (row.views_count ?? 0),
       0,
     );
