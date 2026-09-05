@@ -92,46 +92,25 @@ export const Route = createFileRoute(
           event === "charge.failed" ||
           status === "failed";
 
-        const { supabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
+        const { createPublicServerClient } = await import(
+          "@/lib/supabase-public.server"
         );
 
-        if (paid) {
-          const { error } = await supabaseAdmin
-            .from("cv_purchases")
-            .update({
-              status: "paid",
-              method: data.method ?? null,
-              provider_id: data.id ?? null,
-              paid_at: new Date().toISOString(),
-            })
-            .eq("reference", reference);
+        const supabase = createPublicServerClient();
+
+        if (paid || failed) {
+          const { error } = await supabase.rpc(
+            "netshop_apply_payment" as never,
+            {
+              _reference: reference,
+              _status: paid ? "paid" : "failed",
+              _method: data.method ?? null,
+              _provider_id: data.id ?? null,
+            } as never
+          );
 
           if (error) {
-            console.error(
-              "Erro ao atualizar pagamento:",
-              error
-            );
-
-            return new Response("Database error", {
-              status: 500,
-            });
-          }
-        } else if (failed) {
-          const { error } = await supabaseAdmin
-            .from("cv_purchases")
-            .update({
-              status: "failed",
-              method: data.method ?? null,
-              provider_id: data.id ?? null,
-            })
-            .eq("reference", reference);
-
-          if (error) {
-            console.error(
-              "Erro ao atualizar pagamento:",
-              error
-            );
+            console.error("Erro ao atualizar pagamento:", error);
 
             return new Response("Database error", {
               status: 500,
