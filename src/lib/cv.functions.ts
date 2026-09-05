@@ -181,6 +181,7 @@ async function callGemini(
 }
 
 export const parseCvFile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: ParseInput) => {
     if (!data || typeof data.base64 !== "string" || !data.base64) {
       throw new Error("Ficheiro inválido.");
